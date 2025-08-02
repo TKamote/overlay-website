@@ -1,0 +1,788 @@
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Arial", sans-serif;
+  background: #000;
+  color: #fff;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Overlay Container */
+.overlay-container {
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 10px;
+  padding: 20px;
+  min-width: 400px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Scoreboard Styles */
+.scoreboard {
+  text-align: center;
+}
+
+.tournament-header h2 {
+  color: #ffd700;
+  font-size: 20px;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.players-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.player-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px 16px;
+  border-radius: 6px;
+  border-left: 4px solid #ffd700;
+}
+
+.player-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.player-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.player-team {
+  font-size: 12px;
+  color: #ccc;
+  margin-top: 2px;
+}
+
+.player-score {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ffd700;
+  min-width: 40px;
+  text-align: center;
+}
+
+/* Tournament Info Styles */
+.tournament-info {
+  text-align: center;
+  position: relative;
+  padding: 8px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.main-tournament-header {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.main-tournament-name {
+  color: #ffd700;
+  font-size: 18px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.live-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.tournament-cards {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.tournament-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 200px;
+  flex: 1;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tournament-card-header {
+  margin-bottom: 6px;
+}
+
+.tournament-card-name {
+  color: #ffd700;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.tournament-overall-score {
+  margin: 6px 0;
+}
+
+.tournament-score-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.tournament-team-score {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.tournament-team-name {
+  font-size: 12px;
+  color: #fff;
+  font-weight: bold;
+}
+
+.tournament-team-points {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.tournament-score-separator {
+  font-size: 14px;
+  color: #fff;
+  font-weight: bold;
+}
+
+.tournament-featured-match {
+  margin: 6px 0;
+}
+
+.tournament-match-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.tournament-match-player {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+
+.tournament-player-name {
+  font-size: 11px;
+  color: #fff;
+  font-weight: bold;
+}
+
+.tournament-player-wins {
+  font-size: 14px;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.tournament-match-vs {
+  font-size: 10px;
+  color: #ccc;
+  font-weight: bold;
+}
+
+.tournament-match-status {
+  font-size: 10px;
+  color: #ccc;
+  text-align: center;
+}
+
+.tournament-status {
+  margin-bottom: 15px;
+}
+
+.status-badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.status-active {
+  background: #28a745;
+  color: #fff;
+}
+
+.status-upcoming {
+  background: #ffc107;
+  color: #000;
+}
+
+.status-finished {
+  background: #6c757d;
+  color: #fff;
+}
+
+.round-info {
+  margin-bottom: 15px;
+}
+
+.round-text {
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.player-count {
+  color: #ccc;
+  font-size: 14px;
+}
+
+/* Player Info Display */
+.player-info-display {
+  text-align: center;
+}
+
+.player-info-display h2 {
+  color: #ffd700;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+/* Display Controls */
+.display-controls {
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 8px;
+  padding: 15px;
+  text-align: center;
+}
+
+.display-controls h3 {
+  color: #fff;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.control-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.control-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.control-btn.active {
+  background: #ffd700;
+  color: #000;
+  border-color: #ffd700;
+}
+
+/* Timer Styles */
+.timer-display {
+  text-align: center;
+}
+
+.timer-display h2 {
+  color: #ffd700;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.timer-display .timer {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 20px;
+  min-width: 200px;
+}
+
+.timer-time {
+  font-size: 48px;
+  font-weight: bold;
+  color: #ffd700;
+  font-family: "Courier New", monospace;
+}
+
+.timer-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.timer-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.timer-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Player Details Styles */
+.player-details {
+  text-align: center;
+}
+
+.player-details-header {
+  margin-bottom: 20px;
+}
+
+.player-details-header h2 {
+  color: #ffd700;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.player-count {
+  color: #ccc;
+  font-size: 14px;
+}
+
+.player-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.player-card {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px 16px;
+  border-radius: 6px;
+  border-left: 4px solid #ffd700;
+}
+
+.player-rank {
+  margin-right: 15px;
+}
+
+.rank-number {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.player-info-detailed {
+  flex: 1;
+  text-align: left;
+}
+
+.player-name-detailed {
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.player-team-detailed {
+  font-size: 12px;
+  color: #ccc;
+  margin-top: 2px;
+}
+
+.player-stats {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.player-score-detailed {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.player-position {
+  font-size: 20px;
+}
+
+/* Mini Overlay Components */
+.mini-scoreboard {
+  background: rgba(0, 0, 0, 0.9);
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 200px;
+  border: 2px solid #ffd700;
+}
+
+.mini-tournament-name {
+  color: #ffd700;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.mini-players {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mini-player {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.mini-player-name {
+  font-size: 12px;
+  color: #fff;
+  font-weight: bold;
+}
+
+.mini-player-score {
+  font-size: 14px;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.mini-timer {
+  background: rgba(0, 0, 0, 0.9);
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 120px;
+  border: 2px solid #ffd700;
+  text-align: center;
+}
+
+.mini-timer-time {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffd700;
+  font-family: "Courier New", monospace;
+}
+
+.mini-timer-status {
+  font-size: 10px;
+  color: #fff;
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+.mini-tournament-info {
+  background: rgba(0, 0, 0, 0.9);
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 180px;
+  border: 2px solid #ffd700;
+  text-align: center;
+}
+
+.mini-tournament-info .mini-tournament-name {
+  color: #ffd700;
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.mini-tournament-status {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.mini-status-badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.mini-round-info {
+  font-size: 10px;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Mode Toggle Styles */
+.mode-toggle {
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 10px;
+}
+
+.toggle-section {
+  margin-bottom: 15px;
+}
+
+.toggle-section h4 {
+  color: #fff;
+  font-size: 14px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.toggle-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.toggle-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.toggle-btn.active {
+  background: #ffd700;
+  color: #000;
+  border-color: #ffd700;
+}
+
+/* Overall Score Styles */
+.overall-score {
+  margin: 15px 0;
+  text-align: center;
+}
+
+.overall-score-title {
+  color: #ffd700;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.overall-score-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+
+.team-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.team-name {
+  font-size: 14px;
+  color: #fff;
+  font-weight: bold;
+}
+
+.team-points {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.score-separator {
+  font-size: 20px;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Featured Match Styles */
+.featured-match {
+  margin: 15px 0;
+  text-align: center;
+}
+
+.featured-match-title {
+  color: #ffd700;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.featured-match-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.match-player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.match-player .player-name {
+  font-size: 14px;
+  color: #fff;
+  font-weight: bold;
+}
+
+.player-wins {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.match-vs {
+  font-size: 12px;
+  color: #ccc;
+  font-weight: bold;
+}
+
+.match-status {
+  font-size: 12px;
+  color: #ccc;
+}
+
+.hill-hill {
+  color: #ff6b6b;
+  font-weight: bold;
+  font-size: 14px;
+  text-transform: uppercase;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Mini Overall Score Styles */
+.mini-overall-score {
+  margin: 8px 0;
+}
+
+.mini-score-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+}
+
+.mini-team-name {
+  color: #fff;
+  font-weight: bold;
+}
+
+.mini-team-points {
+  color: #ffd700;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.mini-score-separator {
+  color: #ccc;
+  font-weight: bold;
+}
+
+/* Mini Featured Match Styles */
+.mini-featured-match {
+  margin: 8px 0;
+}
+
+.mini-match-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  margin-bottom: 4px;
+}
+
+.mini-player-name {
+  color: #fff;
+  font-weight: bold;
+}
+
+.mini-player-wins {
+  color: #ffd700;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.mini-match-vs {
+  color: #ccc;
+  font-weight: bold;
+  font-size: 8px;
+}
+
+.mini-match-status {
+  color: #ccc;
+  font-size: 8px;
+  font-weight: bold;
+  text-align: center;
+}
