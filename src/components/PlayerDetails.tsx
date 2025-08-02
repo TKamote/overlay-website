@@ -1,16 +1,21 @@
 import React from "react";
 import type { Player } from "../types/tournament";
 import { formatScore, formatPlayerName } from "../utils/helpers";
+import "./PlayerDetails.css";
 
 interface PlayerDetailsProps {
   players: Player[];
+  displaySize?: "overlay" | "full-screen";
 }
 
-const PlayerDetails: React.FC<PlayerDetailsProps> = ({ players }) => {
+const PlayerDetails: React.FC<PlayerDetailsProps> = ({
+  players,
+  displaySize = "full-screen",
+}) => {
   const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
 
   return (
-    <div className="player-details">
+    <div className="player-details" data-display-size={displaySize}>
       <div className="player-details-header">
         <h2>Player Rankings</h2>
         <span className="player-count">{players.length} Players</span>

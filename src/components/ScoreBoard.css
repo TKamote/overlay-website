@@ -1,0 +1,110 @@
+/* ScoreBoard Component Styles */
+
+.scoreboard {
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.tournament-header {
+  margin-bottom: var(--spacing-2xl);
+}
+
+.tournament-header h2 {
+  color: var(--text-accent);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: var(--spacing-xl);
+  text-shadow: var(--shadow-sm);
+}
+
+.players-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.player-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-card);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--primary-gold);
+  transition: var(--transition-normal);
+}
+
+.player-row:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md);
+}
+
+.player-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.player-name {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.player-team {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-top: var(--spacing-xs);
+}
+
+.player-score {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-accent);
+  min-width: 40px;
+  text-align: center;
+  text-shadow: var(--shadow-sm);
+}
+
+/* Overlay Mode Styles */
+.scoreboard[data-display-size="overlay"] .tournament-header h2 {
+  font-size: var(--font-size-xl);
+  margin-bottom: var(--spacing-lg);
+}
+
+.scoreboard[data-display-size="overlay"] .player-row {
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.scoreboard[data-display-size="overlay"] .player-name {
+  font-size: var(--font-size-base);
+}
+
+.scoreboard[data-display-size="overlay"] .player-team {
+  font-size: var(--font-size-xs);
+}
+
+.scoreboard[data-display-size="overlay"] .player-score {
+  font-size: var(--font-size-xl);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .tournament-header h2 {
+    font-size: var(--font-size-2xl);
+  }
+
+  .player-row {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .player-name {
+    font-size: var(--font-size-base);
+  }
+
+  .player-score {
+    font-size: var(--font-size-xl);
+  }
+} 

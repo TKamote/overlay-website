@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
+import "./Timer.css";
 
 interface TimerProps {
   initialTime?: number; // in seconds
   isRunning?: boolean;
   onTimeUp?: () => void;
+  displaySize?: "overlay" | "full-screen";
 }
 
 const Timer: React.FC<TimerProps> = ({
   initialTime = 300, // 5 minutes default
   isRunning = false,
   onTimeUp,
+  displaySize = "full-screen",
 }) => {
   const [timeLeft, setTimeLeft] = useState(initialTime);
   const [isActive, setIsActive] = useState(isRunning);
@@ -53,17 +56,21 @@ const Timer: React.FC<TimerProps> = ({
   };
 
   return (
-    <div className="timer">
-      <div className="timer-display">
-        <span className="timer-time">{formatTime(timeLeft)}</span>
-      </div>
-      <div className="timer-controls">
-        <button className="timer-btn" onClick={toggleTimer}>
-          {isActive ? "Pause" : "Start"}
-        </button>
-        <button className="timer-btn" onClick={resetTimer}>
-          Reset
-        </button>
+    <div className="timer-display" data-display-size={displaySize}>
+      <h2>Timer</h2>
+      <div className="timer">
+        <div className="timer-display">
+          <span className="timer-time">{formatTime(timeLeft)}</span>
+        </div>
+        <div className="timer-controls">
+          <button className="timer-btn" onClick={toggleTimer}>
+            {isActive ? "Pause" : "Start"}
+          </button>
+          <button className="timer-btn" onClick={resetTimer}>
+            Reset
+          </button>
+        </div>
+        <div className="timer-status">{isActive ? "Running" : "Stopped"}</div>
       </div>
     </div>
   );

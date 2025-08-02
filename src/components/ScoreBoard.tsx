@@ -1,15 +1,21 @@
 import React from "react";
 import type { Player } from "../types/tournament";
 import { formatScore, formatPlayerName } from "../utils/helpers";
+import "./ScoreBoard.css";
 
 interface ScoreBoardProps {
   players: Player[];
   tournamentName: string;
+  displaySize?: "overlay" | "full-screen";
 }
 
-const ScoreBoard: React.FC<ScoreBoardProps> = ({ players, tournamentName }) => {
+const ScoreBoard: React.FC<ScoreBoardProps> = ({
+  players,
+  tournamentName,
+  displaySize = "full-screen",
+}) => {
   return (
-    <div className="scoreboard">
+    <div className="scoreboard" data-display-size={displaySize}>
       <div className="tournament-header">
         <h2>{tournamentName}</h2>
       </div>

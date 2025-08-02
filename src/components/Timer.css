@@ -1,0 +1,132 @@
+/* Timer Component Styles */
+
+.timer-display {
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.timer-display h2 {
+  color: var(--text-accent);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-xl);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: var(--shadow-sm);
+}
+
+.timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-lg);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-2xl);
+  min-width: 200px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-primary);
+}
+
+.timer-time {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-accent);
+  font-family: var(--font-family-mono);
+  text-shadow: var(--shadow-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.timer-controls {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.timer-btn {
+  background: var(--bg-button);
+  border: 2px solid var(--border-primary);
+  color: var(--text-primary);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  transition: var(--transition-normal);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  min-width: 80px;
+}
+
+.timer-btn:hover {
+  background: var(--bg-button-hover);
+  border-color: var(--border-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.timer-btn:active {
+  transform: translateY(0);
+}
+
+.timer-status {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-top: var(--spacing-sm);
+  text-transform: uppercase;
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Overlay Mode Styles */
+.timer-display[data-display-size="overlay"] h2 {
+  font-size: var(--font-size-xl);
+  margin-bottom: var(--spacing-lg);
+}
+
+.timer-display[data-display-size="overlay"] .timer {
+  padding: var(--spacing-lg);
+  min-width: 150px;
+}
+
+.timer-display[data-display-size="overlay"] .timer-time {
+  font-size: var(--font-size-3xl);
+}
+
+.timer-display[data-display-size="overlay"] .timer-controls {
+  gap: var(--spacing-sm);
+}
+
+.timer-display[data-display-size="overlay"] .timer-btn {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  min-width: 60px;
+}
+
+.timer-display[data-display-size="overlay"] .timer-status {
+  font-size: var(--font-size-xs);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .timer-display h2 {
+    font-size: var(--font-size-2xl);
+  }
+
+  .timer {
+    padding: var(--spacing-lg);
+    min-width: 180px;
+  }
+
+  .timer-time {
+    font-size: var(--font-size-3xl);
+  }
+
+  .timer-controls {
+    gap: var(--spacing-sm);
+  }
+
+  .timer-btn {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    min-width: 70px;
+  }
+} 

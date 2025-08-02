@@ -54,3 +54,17 @@ export interface OverlayData {
   displaySize: "overlay" | "full-screen";
   gameState: "in-game" | "timeout" | "break";
 }
+
+// Firebase data types
+export interface FirebaseTournament {
+  id: string;
+  name: string;
+  [key: string]: any;
+}
+
+export interface FirebaseTeam {
+  id: string;
+  name: string;
+  tournamentId?: string;
+  [key: string]: any;
+}
