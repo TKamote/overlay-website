@@ -1,21 +1,22 @@
 import React, { useState } from "react";
 import OverlayContainer from "../components/OverlayContainer";
 import TournamentsPage from "./TournamentsPage";
+import TournamentHistory from "../components/TournamentHistory";
 import "./HomeScreen.css";
 
 const HomeScreen: React.FC = () => {
-  const [activeSection, setActiveSection] = useState("overlay");
+  const [currentPage, setCurrentPage] = useState<
+    "overlay" | "tournaments" | "history"
+  >("overlay");
 
-  const renderSection = () => {
-    switch (activeSection) {
+  const renderPage = () => {
+    switch (currentPage) {
       case "overlay":
         return <OverlayContainer />;
       case "tournaments":
         return <TournamentsPage />;
-      case "settings":
-        return <div className="settings-section">Settings Section</div>;
-      case "players":
-        return <div className="players-section">Players Section</div>;
+      case "history":
+        return <TournamentHistory />;
       default:
         return <OverlayContainer />;
     }
@@ -23,41 +24,32 @@ const HomeScreen: React.FC = () => {
 
   return (
     <div className="home-screen">
-      <header className="home-header">
-        <h1 className="home-title">Owens Cup Tournament Manager</h1>
-        <nav className="home-nav">
-          <button
-            className={`nav-btn ${activeSection === "overlay" ? "active" : ""}`}
-            onClick={() => setActiveSection("overlay")}
-          >
-            Overlay
-          </button>
-          <button
-            className={`nav-btn ${
-              activeSection === "tournaments" ? "active" : ""
-            }`}
-            onClick={() => setActiveSection("tournaments")}
-          >
-            Tournaments
-          </button>
-          <button
-            className={`nav-btn ${activeSection === "players" ? "active" : ""}`}
-            onClick={() => setActiveSection("players")}
-          >
-            Players
-          </button>
-          <button
-            className={`nav-btn ${
-              activeSection === "settings" ? "active" : ""
-            }`}
-            onClick={() => setActiveSection("settings")}
-          >
-            Settings
-          </button>
-        </nav>
-      </header>
+      {/* Navigation Bar */}
+      <nav className="nav-bar">
+        <button
+          className={`nav-button ${currentPage === "overlay" ? "active" : ""}`}
+          onClick={() => setCurrentPage("overlay")}
+        >
+          OVERLAY
+        </button>
+        <button
+          className={`nav-button ${
+            currentPage === "tournaments" ? "active" : ""
+          }`}
+          onClick={() => setCurrentPage("tournaments")}
+        >
+          TOURNAMENTS
+        </button>
+        <button
+          className={`nav-button ${currentPage === "history" ? "active" : ""}`}
+          onClick={() => setCurrentPage("history")}
+        >
+          HISTORY
+        </button>
+      </nav>
 
-      <main className="home-main">{renderSection()}</main>
+      {/* Main Content */}
+      <main className="main-content">{renderPage()}</main>
     </div>
   );
 };
