@@ -47,6 +47,8 @@
   font-weight: var(--font-weight-bold);
   text-transform: uppercase;
   animation: pulse 2s infinite;
+  z-index: 1;
+  pointer-events: none;
 }
 
 @keyframes pulse {

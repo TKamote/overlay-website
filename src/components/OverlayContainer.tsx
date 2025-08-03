@@ -7,14 +7,48 @@ import ScoreBoard from "./ScoreBoard";
 import Timer from "./Timer";
 import PlayerDetails from "./PlayerDetails";
 import "./OverlayContainer.css";
-import { doc, getDoc } from "firebase/firestore";
-import db from "../services/firebase";
 
 const OverlayContainer: React.FC = () => {
   const [overlayData, setOverlayData] = useState<OverlayData | null>(null);
   const [displayMode, setDisplayMode] = useState("tournament-info");
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+
+  // Function to finish current tournament
+  const finishCurrentTournament = () => {
+    if (!overlayData) return;
+
+    const { tournamentManager } = overlayData;
+    const activeTournament =
+      tournamentManager.tournaments[tournamentManager.activeTournamentId];
+
+    if (activeTournament) {
+      // Mark current tournament as finished
+      const updatedTournament = {
+        ...activeTournament,
+        status: "finished" as const,
+      };
+
+      const updatedTournamentManager = {
+        ...tournamentManager,
+        tournaments: {
+          ...tournamentManager.tournaments,
+          [activeTournament.id]: updatedTournament,
+        },
+        // Force switch to finals
+        activeTournamentId: "tournament-final",
+      };
+
+      setOverlayData({
+        ...overlayData,
+        tournamentManager: updatedTournamentManager,
+      });
+
+      console.log(
+        `Tournament "${activeTournament.name}" finished - switching to finals`
+      );
+    }
+  };
 
   const loadData = async () => {
     try {
@@ -102,6 +136,24 @@ const OverlayContainer: React.FC = () => {
             },
           },
         };
+
+        console.log("=== OVERLAY DEBUG ===");
+        console.log(
+          "Semifinal A scores:",
+          tournamentData.tournamentManager.tournaments["tournament-a"]
+            .overallScore
+        );
+        console.log(
+          "Semifinal B scores:",
+          tournamentData.tournamentManager.tournaments["tournament-b"]
+            .overallScore
+        );
+        console.log(
+          "Final scores:",
+          tournamentData.tournamentManager.tournaments["tournament-final"]
+            .overallScore
+        );
+        console.log("==========================");
 
         setOverlayData(tournamentData);
         setLastUpdate(new Date());
@@ -242,6 +294,52 @@ const OverlayContainer: React.FC = () => {
         Last update: {lastUpdate.toLocaleTimeString()}
       </div>
 
+      {/* Debug Information */}
+      {overlayData && (
+        <div
+          style={{
+            position: "absolute",
+            top: "10px",
+            left: "10px",
+            fontSize: "12px",
+            color: "#666",
+            backgroundColor: "rgba(0,0,0,0.7)",
+            padding: "8px",
+            borderRadius: "4px",
+            maxWidth: "300px",
+            zIndex: 5,
+            border: "1px solid rgba(255,255,255,0.2)",
+          }}
+        >
+          <div>
+            <strong>Active Tournament:</strong>{" "}
+            {overlayData.tournamentManager.activeTournamentId}
+          </div>
+          <div>
+            <strong>Tournament Status:</strong>{" "}
+            {
+              overlayData.tournamentManager.tournaments[
+                overlayData.tournamentManager.activeTournamentId
+              ]?.status
+            }
+          </div>
+          <div>
+            <strong>Matches:</strong>{" "}
+            {
+              overlayData.tournamentManager.tournaments[
+                overlayData.tournamentManager.activeTournamentId
+              ]?.matches.length
+            }
+          </div>
+          <div>
+            <strong>Featured Match:</strong>{" "}
+            {overlayData.tournamentManager.tournaments[
+              overlayData.tournamentManager.activeTournamentId
+            ]?.featuredMatch?.id || "None"}
+          </div>
+        </div>
+      )}
+
       <div className="overlay-controls">
         <div className="mode-controls">
           <button
@@ -273,6 +371,34 @@ const OverlayContainer: React.FC = () => {
             onClick={() => handleModeChange("player-info")}
           >
             Players
+          </button>
+        </div>
+
+        {/* Simple Finish Tournament Button */}
+        <div
+          style={{
+            position: "fixed",
+            bottom: "20px",
+            right: "20px",
+            zIndex: 1000,
+          }}
+        >
+          <button
+            onClick={finishCurrentTournament}
+            style={{
+              backgroundColor: "#ff4444",
+              color: "white",
+              border: "none",
+              padding: "12px 24px",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontSize: "16px",
+              fontWeight: "bold",
+              boxShadow: "0 4px 8px rgba(0,0,0,0.3)",
+              textTransform: "uppercase",
+            }}
+          >
+            🏆 FINISH TOURNAMENT
           </button>
         </div>
       </div>

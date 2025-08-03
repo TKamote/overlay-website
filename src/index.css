@@ -224,6 +224,43 @@
   }
 }
 
+/* Finals Transition Button */
+.finals-transition {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  padding: 15px;
+  background: rgba(255, 215, 0, 0.1);
+  border: 2px solid var(--warning-color);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(10px);
+}
+
+.start-finals-btn {
+  background: linear-gradient(45deg, var(--warning-color), #ffed4e);
+  color: var(--text-dark);
+  border: none;
+  padding: 15px 30px;
+  border-radius: var(--radius-md);
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  box-shadow: var(--shadow-md);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.start-finals-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  background: linear-gradient(45deg, #ffed4e, var(--warning-color));
+}
+
+.start-finals-btn:active {
+  transform: translateY(-1px);
+}
+
 /* Responsive design */
 @media (max-width: 1200px) {
   .history-list {
@@ -258,5 +295,16 @@
 
   .tournament-info h3 {
     font-size: 1.3rem;
+  }
+
+  /* Responsive design for Finals transition */
+  .finals-transition {
+    margin: 15px 0;
+    padding: 10px;
+  }
+
+  .start-finals-btn {
+    padding: 12px 24px;
+    font-size: 1rem;
   }
 }

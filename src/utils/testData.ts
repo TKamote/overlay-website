@@ -163,6 +163,65 @@ export const sampleTournamentManager: TournamentManager = {
   tournaments: {
     "tournament-a": sampleTournamentA,
     "tournament-b": sampleTournamentB,
+    "tournament-final": {
+      id: "tournament-final",
+      name: "Owens Cup 2024 - FINAL",
+      status: "active" as const,
+      players: [
+        { id: "final-1", name: "Champion Player", score: 0, team: "Champions" },
+        { id: "final-2", name: "Runner Up", score: 0, team: "Runners" },
+      ],
+      matches: [
+        {
+          id: "final-match-1",
+          player1: {
+            id: "final-1",
+            name: "Champion Player",
+            score: 0,
+            team: "Champions",
+          },
+          player2: {
+            id: "final-2",
+            name: "Runner Up",
+            score: 0,
+            team: "Runners",
+          },
+          player1Wins: 0,
+          player2Wins: 0,
+          raceTo: 7,
+          isFeatured: true,
+          status: "active" as const,
+        },
+      ],
+      currentRound: 1,
+      totalRounds: 1,
+      overallScore: {
+        team1Score: 0,
+        team2Score: 0,
+        team1Name: "Champions",
+        team2Name: "Runners",
+      },
+      featuredMatch: {
+        id: "final-match-1",
+        player1: {
+          id: "final-1",
+          name: "Champion Player",
+          score: 0,
+          team: "Champions",
+        },
+        player2: {
+          id: "final-2",
+          name: "Runner Up",
+          score: 0,
+          team: "Runners",
+        },
+        player1Wins: 0,
+        player2Wins: 0,
+        raceTo: 7,
+        isFeatured: true,
+        status: "active" as const,
+      },
+    },
   },
   activeTournamentId: "tournament-a",
   globalFeaturedMatch: null, // Will be calculated by manager
