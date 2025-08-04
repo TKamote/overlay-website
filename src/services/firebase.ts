@@ -102,7 +102,7 @@ export const getUserTournamentData = async (
         // Fallback: try to extract teams from root level
         teams = Object.entries(data)
           .filter(
-            ([key, value]) =>
+            ([_, value]) =>
               typeof value === "object" && value !== null && value.name
           )
           .map(([key, teamData]: [string, any]) => ({

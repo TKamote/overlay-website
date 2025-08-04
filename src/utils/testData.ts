@@ -239,7 +239,5 @@ export const createSampleTournamentManager = (): TournamentManagerClass => {
 export const sampleOverlayData: OverlayData = {
   tournamentManager: sampleTournamentManager,
   isVisible: true,
-  displayMode: "scoreboard",
-  displaySize: "full-screen",
   gameState: "in-game",
 };

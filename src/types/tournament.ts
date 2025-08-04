@@ -32,7 +32,7 @@ export interface Tournament {
   currentRound?: number;
   totalRounds?: number;
   overallScore?: TeamScore;
-  featuredMatch?: Match; // Best match in this tournament
+  featuredMatch?: Match | null; // Best match in this tournament
 }
 
 export interface TournamentManager {
@@ -45,13 +45,6 @@ export interface TournamentManager {
 export interface OverlayData {
   tournamentManager: TournamentManager;
   isVisible: boolean;
-  displayMode:
-    | "scoreboard"
-    | "player-info"
-    | "tournament-info"
-    | "timer"
-    | "rankings";
-  displaySize: "overlay" | "full-screen";
   gameState: "in-game" | "timeout" | "break";
 }
 
@@ -59,12 +52,12 @@ export interface OverlayData {
 export interface FirebaseTournament {
   id: string;
   name: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface FirebaseTeam {
   id: string;
   name: string;
   tournamentId?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }

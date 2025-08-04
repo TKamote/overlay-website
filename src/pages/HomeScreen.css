@@ -2,109 +2,230 @@
 
 .home-screen {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
-.nav-bar {
+/* Countdown Timer */
+.countdown-timer {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 8px 16px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  animation: fadeIn 0.5s ease-in;
+  white-space: nowrap;
+}
+
+.countdown-text {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.countdown-time {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ff6b6b;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Home-level Live Indicator */
+.home-live-indicator {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #ff6b6b;
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  background: rgba(212, 245, 148, 0.9);
+  padding: 8px 16px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 107, 107, 0.3);
+  box-shadow: 0 4px 16px rgba(255, 107, 107, 0.4);
+  animation: fadeInOut 2s infinite;
+  z-index: 1000;
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.home-live-indicator .live-dot {
+  width: 10px;
+  height: 10px;
+  background-color: #ff6b6b;
+  border-radius: 50%;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes fadeInOut {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.navigation {
   display: flex;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 15px 0;
+  align-items: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 2px solid #cccccc;
 }
 
 .nav-button {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  border: none;
+  background: transparent;
+  border: 2px solid #cccccc;
+  color: #ffffff;
   padding: 12px 24px;
   margin: 0 10px;
-  border-radius: 25px;
-  font-size: 1rem;
+  border-radius: 8px;
+  font-size: 16px;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .nav-button:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #cccccc;
+  color: #333333;
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .nav-button.active {
-  background: linear-gradient(45deg, #ffd700, #ffed4e);
-  color: #333;
-  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+  background: #cccccc;
+  color: #333333;
+  border-color: #333333;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .main-content {
   flex: 1;
-  padding: 20px;
-}
-
-/* Section Placeholders */
-.settings-section,
-.tournaments-section,
-.players-section {
-  background: var(--bg-overlay);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-3xl);
-  box-shadow: var(--shadow-xl);
-  border: 2px solid var(--border-accent);
-  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 0;
   width: 100%;
-  max-width: 800px;
-  text-align: center;
-  color: var(--text-primary);
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
 }
 
-/* Responsive design */
+/* Responsive design for countdown and live indicator */
+@media (max-width: 1200px) {
+  .countdown-timer {
+    top: 15px;
+    right: 15px;
+    font-size: 14px;
+    padding: 6px 12px;
+    gap: 6px;
+  }
+
+  .countdown-text {
+    font-size: 12px;
+  }
+
+  .countdown-time {
+    font-size: 16px;
+  }
+
+  .home-live-indicator {
+    top: 15px;
+    right: 15px;
+    font-size: 16px;
+    padding: 6px 12px;
+  }
+}
+
 @media (max-width: 768px) {
-  .nav-bar {
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px;
+  .countdown-timer {
+    top: 10px;
+    right: 10px;
+    font-size: 12px;
+    padding: 4px 8px;
+    gap: 4px;
   }
 
-  .nav-button {
-    margin: 5px 0;
-    width: 100%;
-    max-width: 300px;
+  .countdown-text {
+    font-size: 10px;
   }
 
-  .home-header {
-    padding: var(--spacing-lg);
+  .countdown-time {
+    font-size: 14px;
   }
 
-  .home-title {
-    font-size: var(--font-size-2xl);
-    margin-bottom: var(--spacing-lg);
-  }
-
-  .home-nav {
-    gap: var(--spacing-sm);
-  }
-
-  .nav-btn {
-    padding: var(--spacing-sm) var(--spacing-lg);
-    font-size: var(--font-size-sm);
-    min-width: 100px;
-  }
-
-  .home-main {
-    padding: var(--spacing-lg);
-  }
-
-  .settings-section,
-  .tournaments-section,
-  .players-section {
-    padding: var(--spacing-xl);
-    font-size: var(--font-size-lg);
+  .home-live-indicator {
+    top: 10px;
+    right: 10px;
+    font-size: 14px;
+    padding: 4px 8px;
   }
 }

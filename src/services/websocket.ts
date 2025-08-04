@@ -30,7 +30,7 @@ class WebSocketService {
         }
       };
 
-      this.ws.onerror = (error) => {
+      this.ws.onerror = (_error) => {
         console.log(
           "WebSocket connection failed (this is normal if no server is running)"
         );
