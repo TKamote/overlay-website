@@ -39,7 +39,7 @@
   flex-direction: column;
   gap: 15px;
   flex: 1;
-  overflow-y: auto;
+  overflow-y: visible;
 }
 
 /* Individual team card */
@@ -98,7 +98,6 @@
 }
 
 /* Tournament Structure Column (second column in TSX) */
-/* Uses same .information-column styles */
 
 /* Tournament structure section */
 .tournament-structure {
@@ -106,7 +105,7 @@
   flex-direction: column;
   gap: 15px;
   flex: 1;
-  overflow-y: auto;
+  overflow-y: visible;
 }
 
 /* Individual structure card */
@@ -156,12 +155,11 @@
 }
 
 /* Players Column (third column in TSX) */
-/* Uses same .information-column styles */
 
 /* Players table container */
 .players-table-container {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: visible;
   overflow-x: hidden;
 }
 

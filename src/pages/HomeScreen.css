@@ -8,11 +8,175 @@
   position: relative;
 }
 
+/* Header with 3 containers */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid #cccccc;
+  position: relative;
+}
+
+/* Left: Logo */
+.header-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.logo {
+  height: 62px;
+  width: 62px;
+  object-fit: cover;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+/* Center: Navigation */
+.navigation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 2;
+  gap: 20px;
+}
+
+/* Burger Menu (Mobile) */
+.burger-menu {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 30px;
+  height: 25px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 10;
+}
+
+.burger-line {
+  width: 100%;
+  height: 3px;
+  background-color: #ffffff;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.burger-menu:hover .burger-line {
+  background-color: #cccccc;
+}
+
+/* Mobile Navigation Menu */
+.mobile-nav {
+  display: none;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid #cccccc;
+  padding: 20px;
+  gap: 15px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.mobile-nav-button {
+  background: transparent;
+  border: 2px solid #cccccc;
+  color: #ffffff;
+  padding: 15px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.mobile-nav-button:hover {
+  background: #cccccc;
+  color: #333333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.mobile-nav-button.active {
+  background: #cccccc;
+  color: #333333;
+  border-color: #333333;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Mobile Timer Container */
+.mobile-timer-container {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(5px);
+}
+
+.nav-button {
+  background: transparent;
+  border: 2px solid #cccccc;
+  color: #ffffff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.nav-button:hover {
+  background: #cccccc;
+  color: #333333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.nav-button.active {
+  background: #cccccc;
+  color: #333333;
+  border-color: #333333;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Right: Timer/Live Indicator */
+.header-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+  gap: 15px;
+}
+
+/* Desktop Timer Container */
+.desktop-timer-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
 /* Countdown Timer */
 .countdown-timer {
-  position: absolute;
-  top: 20px;
-  right: 20px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -69,9 +233,6 @@
 
 /* Home-level Live Indicator */
 .home-live-indicator {
-  position: absolute;
-  top: 20px;
-  right: 20px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -86,9 +247,8 @@
   backdrop-filter: blur(10px);
   border: 2px solid rgba(255, 107, 107, 0.3);
   box-shadow: 0 4px 16px rgba(255, 107, 107, 0.4);
-  animation: fadeInOut 2s infinite;
   z-index: 1000;
-  animation: slideIn 0.5s ease-out;
+  animation: slideIn 0.5s ease-out, fadeInOut 2s infinite;
 }
 
 @keyframes slideIn {
@@ -131,45 +291,6 @@
   }
 }
 
-.navigation {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-bottom: 2px solid #cccccc;
-}
-
-.nav-button {
-  background: transparent;
-  border: 2px solid #cccccc;
-  color: #ffffff;
-  padding: 12px 24px;
-  margin: 0 10px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.nav-button:hover {
-  background: #cccccc;
-  color: #333333;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.nav-button.active {
-  background: #cccccc;
-  color: #333333;
-  border-color: #333333;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
 .main-content {
   flex: 1;
   display: flex;
@@ -179,14 +300,25 @@
   width: 100%;
 }
 
-/* Responsive design for countdown and live indicator */
+/* Responsive design for header */
 @media (max-width: 1200px) {
+  .header {
+    padding: 12px 20px;
+  }
+
+  .logo {
+    height: 35px;
+    width: 35px;
+  }
+
+  .nav-button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
   .countdown-timer {
-    top: 15px;
-    right: 15px;
     font-size: 14px;
     padding: 6px 12px;
-    gap: 6px;
   }
 
   .countdown-text {
@@ -198,20 +330,52 @@
   }
 
   .home-live-indicator {
-    top: 15px;
-    right: 15px;
     font-size: 16px;
     padding: 6px 12px;
   }
 }
 
 @media (max-width: 768px) {
+  .header {
+    padding: 10px 15px;
+  }
+
+  .header-left {
+    flex: 1;
+  }
+
+  .navigation {
+    display: none;
+  }
+
+  .burger-menu {
+    display: flex;
+  }
+
+  .mobile-nav {
+    display: flex;
+  }
+
+  .mobile-timer-container {
+    display: flex;
+  }
+
+  .desktop-timer-container {
+    display: none;
+  }
+
+  .header-right {
+    justify-content: flex-end;
+  }
+
+  .logo {
+    height: 30px;
+    width: 30px;
+  }
+
   .countdown-timer {
-    top: 10px;
-    right: 10px;
     font-size: 12px;
     padding: 4px 8px;
-    gap: 4px;
   }
 
   .countdown-text {
@@ -223,8 +387,6 @@
   }
 
   .home-live-indicator {
-    top: 10px;
-    right: 10px;
     font-size: 14px;
     padding: 4px 8px;
   }

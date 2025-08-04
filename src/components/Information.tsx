@@ -1,50 +1,40 @@
 import React from "react";
+import { useAppData } from "../contexts/DataContext";
 import "./Information.css";
 
 const Information: React.FC = () => {
-  const teams = [
-    {
-      name: "Warriors",
-      captain: "John Smith",
-      manager: "Mike Johnson",
-      color: "Blue",
-      players: 8,
-    },
-    {
-      name: "Cavs",
-      captain: "Sarah Wilson",
-      manager: "David Brown",
-      color: "Red",
-      players: 7,
-    },
-    {
-      name: "Lakers",
-      captain: "Alex Chen",
-      manager: "Lisa Wang",
-      color: "Purple",
-      players: 9,
-    },
-    {
-      name: "Heat",
-      captain: "Tom Davis",
-      manager: "Emma Rodriguez",
-      color: "Orange",
-      players: 6,
-    },
-  ];
+  const { teams, players, loading, error } = useAppData();
 
-  const players = [
-    { name: "John Smith", points: 15, team: "Warriors" },
-    { name: "Sarah Johnson", points: 12, team: "Cavs" },
-    { name: "Mike Davis", points: 18, team: "Warriors" },
-    { name: "Emma Wilson", points: 9, team: "Cavs" },
-    { name: "Alex Chen", points: 8, team: "Lakers" },
-    { name: "Maria Rodriguez", points: 6, team: "Heat" },
-    { name: "David Kim", points: 9, team: "Lakers" },
-    { name: "Lisa Wang", points: 4, team: "Heat" },
-    { name: "Chris Lee", points: 11, team: "Warriors" },
-    { name: "Sophie Brown", points: 7, team: "Cavs" },
-  ];
+  if (loading) {
+    return (
+      <div className="information-container">
+        <div className="loading-message">Loading tournament data...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="information-container">
+        <div className="error-message">Error: {error}</div>
+      </div>
+    );
+  }
+
+  // Group players by team for the Teams column
+  const playersByTeam = players.reduce(
+    (
+      acc: { [key: string]: { name: string; team: string; points?: number }[] },
+      player
+    ) => {
+      if (!acc[player.team]) {
+        acc[player.team] = [];
+      }
+      acc[player.team].push(player);
+      return acc;
+    },
+    {}
+  );
 
   return (
     <div className="information-container">
@@ -53,7 +43,7 @@ const Information: React.FC = () => {
         <h2>Teams</h2>
         <div className="teams-list">
           {teams.map((team, index) => (
-            <div key={index} className="team-card">
+            <div key={team.id || index} className="team-card">
               <div className="team-header">
                 <span className="team-icon">🏀</span>
                 <span className="team-name">{team.name}</span>
@@ -73,7 +63,21 @@ const Information: React.FC = () => {
                 </div>
                 <div className="team-stat">
                   <span className="stat-label">Players:</span>
-                  <span className="stat-value">{team.players}</span>
+                  <span className="stat-value">
+                    {playersByTeam[team.name] &&
+                    playersByTeam[team.name].length > 0
+                      ? playersByTeam[team.name].map(
+                          (player: { name: string }, index: number) => (
+                            <div
+                              key={index}
+                              style={{ marginLeft: "10px", fontSize: "12px" }}
+                            >
+                              P{index + 1}: {player.name}
+                            </div>
+                          )
+                        )
+                      : "No players"}
+                  </span>
                 </div>
               </div>
             </div>
@@ -90,7 +94,9 @@ const Information: React.FC = () => {
             <div className="structure-details">
               <div className="structure-item">
                 <span className="item-label">Type:</span>
-                <span className="item-value">Owen's Musconi Cup Style Tournament</span>
+                <span className="item-value">
+                  Owen's Musconi Cup Style Tournament
+                </span>
               </div>
               <div className="structure-item">
                 <span className="item-label">Best of:</span>
@@ -155,9 +161,9 @@ const Information: React.FC = () => {
             </thead>
             <tbody>
               {players.map((player, index) => (
-                <tr key={index}>
+                <tr key={player.id || index}>
                   <td className="player-name">{player.name}</td>
-                  <td className="player-points">{player.points}</td>
+                  <td className="player-points">{player.points || 0}</td>
                   <td className="player-team">{player.team}</td>
                 </tr>
               ))}

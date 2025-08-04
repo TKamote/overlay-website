@@ -8,6 +8,7 @@ const HomeScreen: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<
     "overlay" | "tournaments" | "history"
   >("overlay");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Countdown timer state
   const [countdown, setCountdown] = useState(30 * 60); // 30 minutes in seconds
@@ -54,47 +55,134 @@ const HomeScreen: React.FC = () => {
     }
   };
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleNavClick = (page: "overlay" | "tournaments" | "history") => {
+    setCurrentPage(page);
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <div className="home-screen">
-      {/* Countdown Timer */}
-      {isCountdownActive && (
-        <div className="countdown-timer">
-          <span className="countdown-text">Tournament Starts in</span>
-          <span className="countdown-time">[{formatCountdown(countdown)}]</span>
+      {/* Header with 3 containers */}
+      <header className="header">
+        {/* Left: Logo */}
+        <div className="header-left">
+          <img src="/playstore.png" alt="Tournament Logo" className="logo" />
+        </div>
+
+        {/* Center: Navigation (Desktop) */}
+        <nav className="navigation desktop-nav">
+          <button
+            className={`nav-button ${
+              currentPage === "overlay" ? "active" : ""
+            }`}
+            onClick={() => setCurrentPage("overlay")}
+          >
+            MAIN SCORE
+          </button>
+          <button
+            className={`nav-button ${
+              currentPage === "tournaments" ? "active" : ""
+            }`}
+            onClick={() => setCurrentPage("tournaments")}
+          >
+            TOURNAMENTS
+          </button>
+          <button
+            className={`nav-button ${
+              currentPage === "history" ? "active" : ""
+            }`}
+            onClick={() => setCurrentPage("history")}
+          >
+            INFORMATION
+          </button>
+        </nav>
+
+        {/* Right: Burger Menu (Mobile) */}
+        <div className="header-right">
+          {/* Desktop Timer/Live Indicator */}
+          <div className="desktop-timer-container">
+            {/* Countdown Timer */}
+            {isCountdownActive && (
+              <div className="countdown-timer">
+                <span className="countdown-text">Tournament Starts in</span>
+                <span className="countdown-time">
+                  [{formatCountdown(countdown)}]
+                </span>
+              </div>
+            )}
+
+            {/* Live Indicator */}
+            {hasLiveMatch && (
+              <div className="home-live-indicator">
+                <span className="live-dot"></span>
+                LIVE
+              </div>
+            )}
+          </div>
+
+          {/* Burger Menu (Mobile) */}
+          <button className="burger-menu" onClick={toggleMobileMenu}>
+            <span className="burger-line"></span>
+            <span className="burger-line"></span>
+            <span className="burger-line"></span>
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile Navigation Menu */}
+      {isMobileMenuOpen && (
+        <div className="mobile-nav">
+          <button
+            className={`mobile-nav-button ${
+              currentPage === "overlay" ? "active" : ""
+            }`}
+            onClick={() => handleNavClick("overlay")}
+          >
+            MAIN SCORE
+          </button>
+          <button
+            className={`mobile-nav-button ${
+              currentPage === "tournaments" ? "active" : ""
+            }`}
+            onClick={() => handleNavClick("tournaments")}
+          >
+            TOURNAMENTS
+          </button>
+          <button
+            className={`mobile-nav-button ${
+              currentPage === "history" ? "active" : ""
+            }`}
+            onClick={() => handleNavClick("history")}
+          >
+            INFORMATION
+          </button>
         </div>
       )}
 
-      {/* Live Indicator at Home Screen Level */}
-      {hasLiveMatch && (
-        <div className="home-live-indicator">
-          <span className="live-dot"></span>
-          LIVE
-        </div>
-      )}
+      {/* Timer/Live Indicator (Mobile - positioned below header) */}
+      <div className="mobile-timer-container">
+        {/* Countdown Timer */}
+        {isCountdownActive && (
+          <div className="countdown-timer">
+            <span className="countdown-text">Tournament Starts in</span>
+            <span className="countdown-time">
+              [{formatCountdown(countdown)}]
+            </span>
+          </div>
+        )}
 
-      {/* Navigation Bar */}
-      <nav className="navigation">
-        <button
-          className={`nav-button ${currentPage === "overlay" ? "active" : ""}`}
-          onClick={() => setCurrentPage("overlay")}
-        >
-          MAIN SCORE
-        </button>
-        <button
-          className={`nav-button ${
-            currentPage === "tournaments" ? "active" : ""
-          }`}
-          onClick={() => setCurrentPage("tournaments")}
-        >
-          TOURNAMENTS
-        </button>
-        <button
-          className={`nav-button ${currentPage === "history" ? "active" : ""}`}
-          onClick={() => setCurrentPage("history")}
-        >
-          INFORMATION
-        </button>
-      </nav>
+        {/* Live Indicator */}
+        {hasLiveMatch && (
+          <div className="home-live-indicator">
+            <span className="live-dot"></span>
+            LIVE
+          </div>
+        )}
+      </div>
 
       {/* Main Content */}
       <main className="main-content">{renderPage()}</main>

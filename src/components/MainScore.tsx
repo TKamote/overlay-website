@@ -1,4 +1,5 @@
 import React from "react";
+import { useAppData } from "../contexts/DataContext";
 import "./MainScore.css";
 
 interface Match {
@@ -14,14 +15,44 @@ interface TournamentStage {
 }
 
 const MainScore: React.FC = () => {
+  const { teams, loading, error } = useAppData();
+
+  if (loading) {
+    return (
+      <div className="score-grid">
+        <div className="loading-message">Loading tournament data...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="score-grid">
+        <div className="error-message">Error: {error}</div>
+      </div>
+    );
+  }
+
+  // Get team names from Firebase data
+  const teamNames = teams.map((team) => team.name);
+  const warriors =
+    teamNames.find((name) => name.toLowerCase().includes("warrior")) ||
+    "Warriors";
+  const cavs =
+    teamNames.find((name) => name.toLowerCase().includes("cav")) || "Cavs";
+  const lakers =
+    teamNames.find((name) => name.toLowerCase().includes("laker")) || "Lakers";
+  const heat =
+    teamNames.find((name) => name.toLowerCase().includes("heat")) || "Heat";
+
   // Sample tournament data - in a real app this would come from props or API
   const tournamentData: TournamentStage[] = [
     {
       title: "SEMIFINAL 1",
       matches: [
         {
-          team1: "Warriors",
-          team2: "Cavs",
+          team1: warriors,
+          team2: cavs,
           score1: 3,
           score2: 2,
         },
@@ -31,8 +62,8 @@ const MainScore: React.FC = () => {
       title: "SEMIFINAL 2",
       matches: [
         {
-          team1: "Lakers",
-          team2: "Heat",
+          team1: lakers,
+          team2: heat,
           score1: 4,
           score2: 1,
         },
@@ -42,8 +73,8 @@ const MainScore: React.FC = () => {
       title: "FINALS",
       matches: [
         {
-          team1: "Lakers",
-          team2: "Warriors",
+          team1: lakers,
+          team2: warriors,
           score1: 2,
           score2: 1,
         },
@@ -59,9 +90,13 @@ const MainScore: React.FC = () => {
         <span className="team-name">{match.team2}</span>
       </div>
       <div className="score-row">
-        <span className="score">{match.score1}</span>
+        <span key={`score1-${match.team1}-${match.team2}`} className="score">
+          {match.score1}
+        </span>
         <span className="score-separator">-</span>
-        <span className="score">{match.score2}</span>
+        <span key={`score2-${match.team1}-${match.team2}`} className="score">
+          {match.score2}
+        </span>
       </div>
     </div>
   );
