@@ -1,5 +1,6 @@
 import React from "react";
-import { useAppData } from "../contexts/DataContext";
+import { useAppData } from "../hooks/useAppData";
+import type { Player, Team } from "../contexts/AppContext";
 import "./Information.css";
 
 const Information: React.FC = () => {
@@ -25,7 +26,7 @@ const Information: React.FC = () => {
   const playersByTeam = players.reduce(
     (
       acc: { [key: string]: { name: string; team: string; points?: number }[] },
-      player
+      player: Player
     ) => {
       if (!acc[player.team]) {
         acc[player.team] = [];
@@ -42,46 +43,55 @@ const Information: React.FC = () => {
       <div className="information-column">
         <h2>Teams</h2>
         <div className="teams-list">
-          {teams.map((team, index) => (
-            <div key={team.id || index} className="team-card">
-              <div className="team-header">
-                <span className="team-icon">🏀</span>
-                <span className="team-name">{team.name}</span>
-              </div>
-              <div className="team-details">
-                <div className="team-stat">
-                  <span className="stat-label">Captain:</span>
-                  <span className="stat-value">{team.captain}</span>
+          {teams.length > 0 ? (
+            teams.map((team: Team, index: number) => (
+              <div key={team.id || index} className="team-card">
+                <div className="team-header">
+                  <span className="team-icon">🏀</span>
+                  <span className="team-name">{team.name}</span>
                 </div>
-                <div className="team-stat">
-                  <span className="stat-label">Manager:</span>
-                  <span className="stat-value">{team.manager}</span>
-                </div>
-                <div className="team-stat">
-                  <span className="stat-label">Color:</span>
-                  <span className="stat-value">{team.color}</span>
-                </div>
-                <div className="team-stat">
-                  <span className="stat-label">Players:</span>
-                  <span className="stat-value">
-                    {playersByTeam[team.name] &&
-                    playersByTeam[team.name].length > 0
-                      ? playersByTeam[team.name].map(
-                          (player: { name: string }, index: number) => (
-                            <div
-                              key={index}
-                              style={{ marginLeft: "10px", fontSize: "12px" }}
-                            >
-                              P{index + 1}: {player.name}
-                            </div>
+                <div className="team-details">
+                  <div className="team-stat">
+                    <span className="stat-label">Captain:</span>
+                    <span className="stat-value">{team.captain}</span>
+                  </div>
+                  <div className="team-stat">
+                    <span className="stat-label">Manager:</span>
+                    <span className="stat-value">{team.manager}</span>
+                  </div>
+                  <div className="team-stat">
+                    <span className="stat-label">Color:</span>
+                    <span className="stat-value">{team.color}</span>
+                  </div>
+                  <div className="team-stat">
+                    <span className="stat-label">Players:</span>
+                    <span className="stat-value">
+                      {playersByTeam[team.name] &&
+                      playersByTeam[team.name].length > 0
+                        ? playersByTeam[team.name].map(
+                            (player: { name: string }, index: number) => (
+                              <div
+                                key={index}
+                                style={{ marginLeft: "10px", fontSize: "12px" }}
+                              >
+                                P{index + 1}: {player.name}
+                              </div>
+                            )
                           )
-                        )
-                      : "No players"}
-                  </span>
+                        : "No players"}
+                    </span>
+                  </div>
                 </div>
               </div>
+            ))
+          ) : (
+            <div className="empty-state">
+              <p>No teams added yet</p>
+              <p style={{ fontSize: "12px", color: "#666" }}>
+                Teams will appear here when added from the mobile app
+              </p>
             </div>
-          ))}
+          )}
         </div>
       </div>
 
@@ -151,24 +161,36 @@ const Information: React.FC = () => {
       <div className="information-column">
         <h2>Players</h2>
         <div className="players-table-container">
-          <table className="players-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Points</th>
-                <th>Team</th>
-              </tr>
-            </thead>
-            <tbody>
-              {players.map((player, index) => (
-                <tr key={player.id || index}>
-                  <td className="player-name">{player.name}</td>
-                  <td className="player-points">{player.points || 0}</td>
-                  <td className="player-team">{player.team}</td>
+          {players.length > 0 ? (
+            <table className="players-table">
+              <thead>
+                <tr>
+                  <th>S/N</th>
+                  <th>Name</th>
+                  <th>Points</th>
+                  <th>Team</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {players.map((player: Player, index: number) => (
+                  <tr key={player.id || index}>
+                    <td className="player-sn">{index + 1}</td>
+                    <td className="player-name">{player.name}</td>
+                    <td className="player-points">{player.points || 0}</td>
+                    <td className="player-team">{player.team}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="empty-state">
+              <p>No players added yet</p>
+              <p style={{ fontSize: "12px", color: "#666" }}>
+                Players will appear here when teams are added from the mobile
+                app
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

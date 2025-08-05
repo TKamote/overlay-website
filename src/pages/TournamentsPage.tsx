@@ -1,6 +1,6 @@
 import React from "react";
-import type { Match } from "../types/tournament";
-import { useAppData } from "../contexts/DataContext";
+import { useAppData } from "../hooks/useAppData";
+import type { Match } from "../contexts/AppContext";
 import "./TournamentsPage.css";
 
 const TournamentsPage: React.FC = () => {
@@ -22,49 +22,83 @@ const TournamentsPage: React.FC = () => {
     );
   }
 
-  // Get team names from Firebase data
-  const teamNames = teams.map((team) => team.name);
-  const warriors =
-    teamNames.find((name) => name.toLowerCase().includes("warrior")) ||
-    "Warriors";
-  const cavs =
-    teamNames.find((name) => name.toLowerCase().includes("cav")) || "Cavs";
-  const lakers =
-    teamNames.find((name) => name.toLowerCase().includes("laker")) || "Lakers";
-  const heat =
-    teamNames.find((name) => name.toLowerCase().includes("heat")) || "Heat";
+  // Check if we have enough teams for tournament structure
+  if (teams.length < 4) {
+    return (
+      <div className="tournament-grid">
+        <div className="tournament-setup-message">
+          <h3>Tournament Setup</h3>
+          <p>Waiting for all 4 teams to be finalized...</p>
+          <p>Teams added: {teams.length}/4</p>
+        </div>
+      </div>
+    );
+  }
 
-  // Static data - no more complex Firebase logic
+  // Use real team data
+  const semifinal1Team1 = teams[0]?.name || "Team 1";
+  const semifinal1Team2 = teams[1]?.name || "Team 2";
+  const semifinal2Team1 = teams[2]?.name || "Team 3";
+  const semifinal2Team2 = teams[3]?.name || "Team 4";
+
+  // Static data with real team names
   const semifinal1Matches: Match[] = Array.from({ length: 9 }, (_, i) => ({
     id: `semifinal1-match-${i + 1}`,
-    player1: { id: `p1-${i}`, name: "Player", score: 0, team: warriors },
-    player2: { id: `p2-${i}`, name: "Player", score: 0, team: cavs },
+    player1: {
+      id: `p1-${i}`,
+      name: "Player",
+      team: semifinal1Team1,
+      points: 0,
+    },
+    player2: {
+      id: `p2-${i}`,
+      name: "Player",
+      team: semifinal1Team2,
+      points: 0,
+    },
     player1Wins: [3, 2, 4, 1, 3, 2, 4, 1, 3][i] || 0,
     player2Wins: [2, 3, 1, 4, 2, 3, 1, 4, 2][i] || 0,
     raceTo: 5,
-    isFeatured: false,
     status: i < 3 ? "active" : i < 6 ? "upcoming" : "finished",
   }));
 
   const semifinal2Matches: Match[] = Array.from({ length: 9 }, (_, i) => ({
     id: `semifinal2-match-${i + 1}`,
-    player1: { id: `p1-${i}`, name: "Player", score: 0, team: lakers },
-    player2: { id: `p2-${i}`, name: "Player", score: 0, team: heat },
+    player1: {
+      id: `p1-${i}`,
+      name: "Player",
+      team: semifinal2Team1,
+      points: 0,
+    },
+    player2: {
+      id: `p2-${i}`,
+      name: "Player",
+      team: semifinal2Team2,
+      points: 0,
+    },
     player1Wins: [4, 3, 2, 4, 3, 2, 4, 3, 2][i] || 0,
     player2Wins: [1, 2, 3, 1, 2, 3, 1, 2, 3][i] || 0,
     raceTo: 5,
-    isFeatured: false,
     status: i < 3 ? "active" : i < 6 ? "upcoming" : "finished",
   }));
 
   const finalsMatches: Match[] = Array.from({ length: 9 }, (_, i) => ({
     id: `finals-match-${i + 1}`,
-    player1: { id: `p1-${i}`, name: "Player", score: 0, team: lakers },
-    player2: { id: `p2-${i}`, name: "Player", score: 0, team: warriors },
+    player1: {
+      id: `p1-${i}`,
+      name: "Player",
+      team: semifinal1Team1,
+      points: 0,
+    },
+    player2: {
+      id: `p2-${i}`,
+      name: "Player",
+      team: semifinal2Team1,
+      points: 0,
+    },
     player1Wins: [2, 3, 1, 4, 2, 3, 1, 4, 2][i] || 0,
     player2Wins: [1, 2, 3, 1, 2, 3, 1, 2, 3][i] || 0,
     raceTo: 5,
-    isFeatured: false,
     status: i < 3 ? "active" : i < 6 ? "upcoming" : "finished",
   }));
 
@@ -144,11 +178,11 @@ const TournamentsPage: React.FC = () => {
         <div className="column-header">
           <h2>Semifinal 1</h2>
           <div className="overall-score">
-            <span className="team-name">{warriors}</span>
+            <span className="team-name">{semifinal1Team1}</span>
             <span className="score">3</span>
             <span className="score-separator">-</span>
             <span className="score">2</span>
-            <span className="team-name">{cavs}</span>
+            <span className="team-name">{semifinal1Team2}</span>
           </div>
         </div>
         <div className="matches-section">
@@ -161,11 +195,11 @@ const TournamentsPage: React.FC = () => {
         <div className="column-header">
           <h2>Finals</h2>
           <div className="overall-score">
-            <span className="team-name">{lakers}</span>
+            <span className="team-name">{semifinal1Team1}</span>
             <span className="score">2</span>
             <span className="score-separator">-</span>
             <span className="score">1</span>
-            <span className="team-name">{warriors}</span>
+            <span className="team-name">{semifinal2Team1}</span>
           </div>
         </div>
         <div className="matches-section">{renderMatches(finalsMatches)}</div>
@@ -176,11 +210,11 @@ const TournamentsPage: React.FC = () => {
         <div className="column-header">
           <h2>Semifinal 2</h2>
           <div className="overall-score">
-            <span className="team-name">{lakers}</span>
+            <span className="team-name">{semifinal2Team1}</span>
             <span className="score">4</span>
             <span className="score-separator">-</span>
             <span className="score">1</span>
-            <span className="team-name">{heat}</span>
+            <span className="team-name">{semifinal2Team2}</span>
           </div>
         </div>
         <div className="matches-section">

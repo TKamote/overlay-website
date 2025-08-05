@@ -8,6 +8,11 @@ import {
   getDocs,
   getDoc,
 } from "firebase/firestore";
+import type {
+  TournamentData,
+  ConfirmedTeam,
+  MatchScore,
+} from "../types/tournament";
 
 // OwensCup Firebase configuration
 const firebaseConfig = {
@@ -30,7 +35,53 @@ export const playersCollection = collection(db, "players");
 export const tournamentsCollection = collection(db, "tournaments");
 export const matchesCollection = collection(db, "matches");
 
-// User's tournament data (actual structure)
+// Helper function to convert confirmedTeams to our Team format
+const convertConfirmedTeamsToTeams = (confirmedTeams: ConfirmedTeam[]) => {
+  return confirmedTeams.map((team) => ({
+    id: team.id.toString(),
+    name: team.name,
+    captain: team.captain,
+    manager: team.manager,
+    color: team.color,
+    icon: team.icon,
+    players: team.players.split(",").map((playerName, playerIndex) => ({
+      id: `player-${team.id}-${playerIndex}`,
+      name: playerName.trim(),
+      team: team.name,
+      points: 0,
+    })),
+  }));
+};
+
+// Helper function to convert matchScores to our Match format
+const convertMatchScoresToMatches = (
+  matchScores: MatchScore[],
+  teams: Record<string, unknown>[],
+  stageName: string
+) => {
+  return matchScores
+    .filter((match) => match.team0Score > 0 || match.team1Score > 0) // Only include matches with scores
+    .map((match) => ({
+      id: `${stageName}-match-${match.matchIndex}`,
+      player1Wins: match.team1Score,
+      player2Wins: match.team0Score,
+      player1: {
+        id: `p1-${stageName}-${match.matchIndex}`,
+        name: teams[1]?.name || "Team 1",
+        team: teams[1]?.name || "Team 1",
+        points: 0,
+      },
+      player2: {
+        id: `p2-${stageName}-${match.matchIndex}`,
+        name: teams[0]?.name || "Team 2",
+        team: teams[0]?.name || "Team 2",
+        points: 0,
+      },
+      raceTo: 5, // Default race to 5
+      status: "finished" as const,
+    }));
+};
+
 export const getUserTournamentData = async (
   userId: string = "hyBfhSIYRsMno2VYRRfIgPT8EmN2"
 ) => {
@@ -48,101 +99,111 @@ export const getUserTournamentData = async (
     const userTournamentDoc = await getDoc(userTournamentRef);
 
     if (userTournamentDoc.exists()) {
-      const data = userTournamentDoc.data();
+      const data = userTournamentDoc.data() as TournamentData;
       console.log("User tournament data:", data);
       console.log("Data keys:", Object.keys(data));
-      console.log("Data structure details:");
 
-      // Log each top-level property to understand the structure
-      Object.entries(data).forEach(([key, value]) => {
-        console.log(`Key: ${key}, Type: ${typeof value}, Value:`, value);
-      });
-
-      // Handle the actual data structure from Firebase
+      // Handle the new data structure
       let teams = [];
+      let matches = [];
 
-      if (data.confirmedTeams) {
-        // Extract teams from confirmedTeams array
-        teams = data.confirmedTeams.map((teamData: any, index: number) => ({
-          id: teamData.id || `team-${index}`,
-          name: teamData.name,
-          captain: teamData.captain,
-          manager: teamData.manager,
-          color: teamData.color,
-          icon: teamData.icon,
-          players: teamData.players,
-        }));
-      } else if (data.semiFinal1 && data.semiFinal1.teams) {
-        // Extract teams from semiFinal1
-        teams = Object.entries(data.semiFinal1.teams).map(
-          ([key, teamData]: [string, any]) => ({
-            id: teamData.id || key,
-            name: teamData.name,
-            captain: teamData.captain,
-            manager: teamData.manager,
-            color: teamData.color,
-            icon: teamData.icon,
-            players: teamData.players,
-          })
+      if (data.confirmedTeams && data.confirmedTeams.length > 0) {
+        console.log("✅ Found confirmedTeams:", data.confirmedTeams);
+
+        // Convert confirmedTeams to our Team format
+        teams = convertConfirmedTeamsToTeams(data.confirmedTeams);
+        console.log("🏀 Converted teams:", teams);
+
+        // Extract players from teams
+        const players = teams.flatMap(
+          (team: Record<string, unknown>) =>
+            (
+              team as {
+                players: {
+                  id: string;
+                  name: string;
+                  team: string;
+                  points: number;
+                }[];
+              }
+            ).players
         );
-      } else if (data.final && data.final.teams) {
-        // Extract teams from final
-        teams = Object.entries(data.final.teams).map(
-          ([key, teamData]: [string, any]) => ({
-            id: teamData.id || key,
-            name: teamData.name,
-            captain: teamData.captain,
-            manager: teamData.manager,
-            color: teamData.color,
-            icon: teamData.icon,
-            players: teamData.players,
-          })
-        );
+        console.log("👥 Players extracted:", players);
+
+        // Process matches from different stages
+        const allMatches = [];
+
+        // Process semiFinal1 matches
+        if (data.semiFinal1 && data.semiFinal1.matchScores) {
+          const semiFinal1Matches = convertMatchScoresToMatches(
+            data.semiFinal1.matchScores,
+            teams,
+            "semiFinal1"
+          );
+          allMatches.push(...semiFinal1Matches);
+          console.log("🎯 SemiFinal1 matches:", semiFinal1Matches);
+        }
+
+        // Process semiFinal2 matches
+        if (data.semiFinal2 && data.semiFinal2.matchScores) {
+          const semiFinal2Matches = convertMatchScoresToMatches(
+            data.semiFinal2.matchScores,
+            teams,
+            "semiFinal2"
+          );
+          allMatches.push(...semiFinal2Matches);
+          console.log("🎯 SemiFinal2 matches:", semiFinal2Matches);
+        }
+
+        // Process final matches
+        if (data.final && data.final.matchScores) {
+          const finalMatches = convertMatchScoresToMatches(
+            data.final.matchScores,
+            teams,
+            "final"
+          );
+          allMatches.push(...finalMatches);
+          console.log("🎯 Final matches:", finalMatches);
+        }
+
+        matches = allMatches;
+        console.log("✅ Total matches processed:", matches.length);
+
+        return {
+          teams,
+          players,
+          matches,
+          tournaments: [],
+          rawData: data,
+          tournamentInfo: {
+            name: data.tournamentName,
+            organizer: data.organizer,
+            raceToScore: data.raceToScore,
+            champion: data.tournamentChampion,
+          },
+        };
       } else {
-        // Fallback: try to extract teams from root level
-        teams = Object.entries(data)
-          .filter(
-            ([_, value]) =>
-              typeof value === "object" && value !== null && value.name
-          )
-          .map(([key, teamData]: [string, any]) => ({
-            id: teamData.id || key,
-            name: teamData.name,
-            captain: teamData.captain,
-            manager: teamData.manager,
-            color: teamData.color,
-            icon: teamData.icon,
-            players: teamData.players,
-          }));
+        console.log("❌ No confirmedTeams found in data");
+        return { teams: [], players: [], tournaments: [] };
       }
-
-      console.log("Converted teams:", teams);
-
-      // Return the complete data structure for overlay processing
-      return {
-        teams,
-        tournaments: [],
-        rawData: data, // Include the raw data for overlay processing
-      };
     } else {
       console.log(
         "No user tournament data found at path: users/",
         userId,
         "/tournament/current"
       );
-      console.log(
-        "Document does not exist. Check the user ID and path in Firebase console."
-      );
-      return { teams: [], tournaments: [] };
+      return { teams: [], players: [], tournaments: [] };
     }
   } catch (error) {
     console.error("Error fetching user tournament data:", error);
-    return { teams: [], tournaments: [] };
+    return { teams: [], players: [], tournaments: [] };
   }
 };
 
 // Real-time listeners
-export const subscribeToTeams = (callback: (teams: any[]) => void) => {
+export const subscribeToTeams = (
+  callback: (teams: Record<string, unknown>[]) => void
+) => {
   return onSnapshot(
     teamsCollection,
     (snapshot) => {
@@ -158,7 +219,9 @@ export const subscribeToTeams = (callback: (teams: any[]) => void) => {
   );
 };
 
-export const subscribeToPlayers = (callback: (players: any[]) => void) => {
+export const subscribeToPlayers = (
+  callback: (players: Record<string, unknown>[]) => void
+) => {
   return onSnapshot(
     playersCollection,
     (snapshot) => {
@@ -175,7 +238,7 @@ export const subscribeToPlayers = (callback: (players: any[]) => void) => {
 };
 
 export const subscribeToTournaments = (
-  callback: (tournaments: any[]) => void
+  callback: (tournaments: Record<string, unknown>[]) => void
 ) => {
   return onSnapshot(
     tournamentsCollection,
@@ -192,7 +255,9 @@ export const subscribeToTournaments = (
   );
 };
 
-export const subscribeToMatches = (callback: (matches: any[]) => void) => {
+export const subscribeToMatches = (
+  callback: (matches: Record<string, unknown>[]) => void
+) => {
   return onSnapshot(
     matchesCollection,
     (snapshot) => {
@@ -209,14 +274,22 @@ export const subscribeToMatches = (callback: (matches: any[]) => void) => {
 };
 
 // Update functions
-export const updateMatchScore = async (matchId: string, updates: any) => {
+export const updateMatchScore = async (
+  matchId: string,
+  updates: Record<string, unknown>
+) => {
   const matchRef = doc(db, "matches", matchId);
-  await updateDoc(matchRef, updates);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await updateDoc(matchRef, updates as any);
 };
 
-export const updateTeamScore = async (teamId: string, updates: any) => {
+export const updateTeamScore = async (
+  teamId: string,
+  updates: Record<string, unknown>
+) => {
   const teamRef = doc(db, "teams", teamId);
-  await updateDoc(teamRef, updates);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await updateDoc(teamRef, updates as any);
 };
 
 // Initial data fetcher

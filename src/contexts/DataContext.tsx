@@ -1,108 +1,20 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getUserTournamentData, fetchInitialData } from "../services/firebase";
+import { debugFirebaseData } from "../utils/debugFirebase";
+import { doc, onSnapshot } from "firebase/firestore";
+import db from "../services/firebase";
+import { fallbackData } from "../utils/fallbackData";
+import { DataContext } from "./AppContext";
+import type {
+  AppData,
+  Team,
+  Player,
+  Match,
+  TournamentInfo,
+} from "./AppContext";
 
-// Data interfaces
-interface Team {
-  id: string;
-  name: string;
-  captain: string;
-  manager: string;
-  color: string;
-  icon?: string;
-  players: Player[];
-}
-
-interface Player {
-  id: string;
-  name: string;
-  team: string;
-  points?: number;
-}
-
-interface Match {
-  id: string;
-  player1: Player;
-  player2: Player;
-  player1Wins: number;
-  player2Wins: number;
-  raceTo: number;
-  status: "upcoming" | "active" | "finished";
-}
-
-interface AppData {
-  teams: Team[];
-  players: Player[];
-  matches: Match[];
-  loading: boolean;
-  error: string | null;
-}
-
-// Sample fallback data
-const fallbackData = {
-  teams: [
-    {
-      id: "team-1",
-      name: "Warriors",
-      captain: "John Smith",
-      manager: "Mike Johnson",
-      color: "Blue",
-      players: [
-        { id: "p1", name: "John Smith", team: "Warriors", points: 15 },
-        { id: "p2", name: "Mike Davis", team: "Warriors", points: 18 },
-        { id: "p3", name: "Chris Lee", team: "Warriors", points: 11 },
-      ],
-    },
-    {
-      id: "team-2",
-      name: "Cavs",
-      captain: "Sarah Wilson",
-      manager: "David Brown",
-      color: "Red",
-      players: [
-        { id: "p4", name: "Sarah Johnson", team: "Cavs", points: 12 },
-        { id: "p5", name: "Emma Wilson", team: "Cavs", points: 9 },
-        { id: "p6", name: "Sophie Brown", team: "Cavs", points: 7 },
-      ],
-    },
-    {
-      id: "team-3",
-      name: "Lakers",
-      captain: "Alex Chen",
-      manager: "Lisa Wang",
-      color: "Purple",
-      players: [
-        { id: "p7", name: "Alex Chen", team: "Lakers", points: 8 },
-        { id: "p8", name: "David Kim", team: "Lakers", points: 9 },
-      ],
-    },
-    {
-      id: "team-4",
-      name: "Heat",
-      captain: "Tom Davis",
-      manager: "Emma Rodriguez",
-      color: "Orange",
-      players: [
-        { id: "p9", name: "Maria Rodriguez", team: "Heat", points: 6 },
-        { id: "p10", name: "Lisa Wang", team: "Heat", points: 4 },
-      ],
-    },
-  ],
-  players: [
-    { id: "p1", name: "John Smith", team: "Warriors", points: 15 },
-    { id: "p2", name: "Mike Davis", team: "Warriors", points: 18 },
-    { id: "p3", name: "Chris Lee", team: "Warriors", points: 11 },
-    { id: "p4", name: "Sarah Johnson", team: "Cavs", points: 12 },
-    { id: "p5", name: "Emma Wilson", team: "Cavs", points: 9 },
-    { id: "p6", name: "Sophie Brown", team: "Cavs", points: 7 },
-    { id: "p7", name: "Alex Chen", team: "Lakers", points: 8 },
-    { id: "p8", name: "David Kim", team: "Lakers", points: 9 },
-    { id: "p9", name: "Maria Rodriguez", team: "Heat", points: 6 },
-    { id: "p10", name: "Lisa Wang", team: "Heat", points: 4 },
-  ],
-};
-
-// Create context
-const DataContext = createContext<AppData | undefined>(undefined);
+// Re-export DataContext for the hook
+export { DataContext };
 
 // Data Provider component
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -112,16 +24,33 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({
     teams: [],
     players: [],
     matches: [],
+    tournamentInfo: null,
     loading: true,
     error: null,
   });
 
   useEffect(() => {
+    console.log("🚀 DataProvider useEffect triggered - starting data fetch");
+
     const fetchData = async () => {
       console.log("🔄 Starting to fetch data...");
       setData((prev) => ({ ...prev, loading: true, error: null }));
 
-      let firebaseData = fallbackData; // Start with fallback data
+      // Run debug function to extract all Firebase data (safely)
+      try {
+        console.log(
+          "🔍 Running debug function to extract all Firebase data..."
+        );
+        await debugFirebaseData();
+      } catch (debugError) {
+        console.log(
+          "⚠️ Debug function failed, continuing with normal data fetch:",
+          debugError
+        );
+      }
+
+      let firebaseData: typeof fallbackData = fallbackData; // Start with fallback data
+      let tournamentInfo: TournamentInfo | null = null;
 
       try {
         // Try to get user-specific data first
@@ -131,10 +60,11 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({
 
         if (userData && userData.teams && userData.teams.length > 0) {
           firebaseData = userData;
+          tournamentInfo = userData.tournamentInfo || null;
         } else {
           throw new Error("No user data found");
         }
-      } catch (userError) {
+      } catch {
         console.log(
           "⚠️ User-specific data failed, trying general collections..."
         );
@@ -151,23 +81,23 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({
           ) {
             // Transform general data to our format
             firebaseData = {
-              teams: generalData.teams.map((team: any) => ({
-                id: team.id,
-                name: team.name,
-                captain: team.captain || "Captain",
-                manager: team.manager || "Manager",
-                color: team.color || "Blue",
-                icon: team.icon,
-                players: team.players || [],
+              teams: generalData.teams.map((team: Record<string, unknown>) => ({
+                id: team.id as string,
+                name: team.name as string,
+                captain: (team.captain as string) || "Captain",
+                manager: (team.manager as string) || "Manager",
+                color: (team.color as string) || "Blue",
+                icon: team.icon as string,
+                players: (team.players as Player[]) || [],
               })),
-              tournaments: generalData.tournaments,
+              players: [],
             };
           } else {
             throw new Error("No general data found");
           }
-        } catch (generalError) {
-          console.log("⚠️ General collections failed, using fallback data...");
-          firebaseData = fallbackData;
+        } catch {
+          console.log("⚠️ No teams found in Firebase - showing empty state");
+          firebaseData = { teams: [], players: [] };
         }
       }
 
@@ -175,49 +105,61 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({
       const teams = firebaseData.teams || [];
       console.log("🏀 Teams loaded:", teams);
 
-      const players = teams.flatMap((team: any) => {
-        // Handle different players data formats from Firebase
-        let teamPlayers = [];
+      // Extract players from teams (simplified to avoid type issues)
+      const players = teams.flatMap((team: Team) => {
+        if (!team.players) return [];
 
         if (Array.isArray(team.players)) {
-          // If it's already an array, use it
-          teamPlayers = team.players;
-        } else if (team.players && typeof team.players === "object") {
-          // If it's an object, convert it to array (RN app format)
-          teamPlayers = Object.values(team.players);
-        } else if (typeof team.players === "string") {
-          // If it's a comma-separated string, split it into array
-          teamPlayers = team.players.split(",").map((name: string) => ({
-            name: name.trim(),
+          return team.players.map((player: Player) => ({
+            id: player.id || `player-${Math.random()}`,
+            name: player.name,
             team: team.name,
+            points: player.points || 0,
           }));
+        } else if (typeof team.players === "string") {
+          return (team.players as string)
+            .split(",")
+            .map((playerName: string, index: number) => ({
+              id: `player-${team.id}-${index}`,
+              name: playerName.trim(),
+              team: team.name,
+              points: 0,
+            }));
+        } else if (typeof team.players === "object") {
+          return Object.entries(team.players as Record<string, unknown>).map(
+            ([key, player]: [string, unknown]) => ({
+              id: (player as Player)?.id || key,
+              name: (player as Player)?.name || key,
+              team: team.name,
+              points: (player as Player)?.points || 0,
+            })
+          );
         }
-
-        console.log(`🔍 Team "${team.name}" players data:`, {
-          teamName: team.name,
-          playersType: typeof team.players,
-          playersIsArray: Array.isArray(team.players),
-          playersValue: team.players,
-          playersLength: teamPlayers.length,
-          convertedPlayers: teamPlayers,
-        });
-
-        return teamPlayers.map((player: any) => ({
-          id: player.id || `player-${Math.random()}`,
-          name: player.name,
-          team: team.name,
-          points: player.points || 0,
-        }));
+        return [];
       });
       console.log("👥 Players loaded:", players);
 
-      // For now, matches will be static until we implement dynamic updates
-      const matches: Match[] = [];
+      // Get match data from the same document
+      const userDataWithMatches = await getUserTournamentData(); // Re-fetch to ensure matches are included
+      const matches = userDataWithMatches?.matches || [];
+      console.log("✅ Matches loaded:", matches);
+      console.log("🔍 Full userDataWithMatches:", userDataWithMatches);
+      console.log("🔍 Matches array length:", matches.length);
+      if (matches.length > 0) {
+        console.log("🔍 First match:", matches[0]);
+        console.log("🔍 First match id:", matches[0].id);
+        console.log(
+          "🔍 First match scores:",
+          matches[0].player1Wins,
+          matches[0].player2Wins
+        );
+      }
 
       setData({
         teams,
         players,
-        matches,
+        matches: matches as Match[],
+        tournamentInfo,
         loading: false,
         error: null,
       });
@@ -226,20 +168,34 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({
         teams,
         players,
         matches,
+        tournamentInfo,
       });
     };
 
     fetchData();
+
+    // Set up real-time listener for live updates
+    const userId = "hyBfhSIYRsMno2VYRRfIgPT8EmN2";
+    const userTournamentRef = doc(db, "users", userId, "tournament", "current");
+
+    const unsubscribe = onSnapshot(
+      userTournamentRef,
+      (doc) => {
+        if (doc.exists()) {
+          console.log("🔄 Real-time update received:", doc.data());
+
+          // Re-fetch data when Firebase document changes
+          fetchData();
+        }
+      },
+      (error) => {
+        console.error("Error listening to real-time updates:", error);
+      }
+    );
+
+    // Cleanup listener on unmount
+    return () => unsubscribe();
   }, []);
 
   return <DataContext.Provider value={data}>{children}</DataContext.Provider>;
-};
-
-// Custom hook to use the data
-export const useAppData = () => {
-  const context = useContext(DataContext);
-  if (context === undefined) {
-    throw new Error("useAppData must be used within a DataProvider");
-  }
-  return context;
 };

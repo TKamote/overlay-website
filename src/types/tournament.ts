@@ -23,6 +23,43 @@ export interface TeamScore {
   team2Name: string;
 }
 
+// New interfaces for the real data structure
+export interface ConfirmedTeam {
+  id: number;
+  name: string;
+  captain: string;
+  manager: string;
+  color: string;
+  icon: string;
+  players: string; // Comma-separated string
+}
+
+export interface MatchScore {
+  matchIndex: number;
+  team0Score: number;
+  team1Score: number;
+}
+
+export interface TournamentStage {
+  currentMatch: number;
+  matchScores: MatchScore[];
+  modalVisible: boolean;
+  teamScores: number[];
+  winner: string | null;
+}
+
+export interface TournamentData {
+  confirmedTeams: ConfirmedTeam[];
+  final: TournamentStage;
+  semiFinal1: TournamentStage;
+  semiFinal2: TournamentStage;
+  tournamentChampion: string | null;
+  tournamentName: string;
+  organizer: string;
+  raceToScore: string;
+  updatedAt: Date | string | number; // timestamp
+}
+
 export interface Tournament {
   id: string;
   name: string;

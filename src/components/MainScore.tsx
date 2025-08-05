@@ -1,8 +1,9 @@
 import React from "react";
-import { useAppData } from "../contexts/DataContext";
+import { useAppData } from "../hooks/useAppData";
+import type { Match } from "../contexts/AppContext";
 import "./MainScore.css";
 
-interface Match {
+interface TournamentMatch {
   team1: string;
   team2: string;
   score1: number;
@@ -11,11 +12,11 @@ interface Match {
 
 interface TournamentStage {
   title: string;
-  matches: Match[];
+  matches: TournamentMatch[];
 }
 
 const MainScore: React.FC = () => {
-  const { teams, loading, error } = useAppData();
+  const { teams, matches, loading, error } = useAppData();
 
   if (loading) {
     return (
@@ -33,28 +34,165 @@ const MainScore: React.FC = () => {
     );
   }
 
-  // Get team names from Firebase data
-  const teamNames = teams.map((team) => team.name);
-  const warriors =
-    teamNames.find((name) => name.toLowerCase().includes("warrior")) ||
-    "Warriors";
-  const cavs =
-    teamNames.find((name) => name.toLowerCase().includes("cav")) || "Cavs";
-  const lakers =
-    teamNames.find((name) => name.toLowerCase().includes("laker")) || "Lakers";
-  const heat =
-    teamNames.find((name) => name.toLowerCase().includes("heat")) || "Heat";
+  // Check if we have enough teams for tournament structure
+  if (teams.length < 4) {
+    return (
+      <div className="score-grid">
+        <div className="tournament-setup-message">
+          <h3>Tournament Setup</h3>
+          <p>Waiting for all 4 teams to be finalized...</p>
+          <p>Teams added: {teams.length}/4</p>
+        </div>
+      </div>
+    );
+  }
 
-  // Sample tournament data - in a real app this would come from props or API
+  // Use real team data - first 2 teams vs last 2 teams
+  const semifinal1Team1 = teams[0]?.name || "Team 1";
+  const semifinal1Team2 = teams[1]?.name || "Team 2";
+  const semifinal2Team1 = teams[2]?.name || "Team 3";
+  const semifinal2Team2 = teams[3]?.name || "Team 4";
+
+  // Calculate real scores from match data
+  let semifinal1Score1 = 0;
+  let semifinal1Score2 = 0;
+  let semifinal2Score1 = 0;
+  let semifinal2Score2 = 0;
+
+  if (matches && matches.length > 0) {
+    console.log("🎯 Using real match data for MainScore:", matches);
+    console.log("🔍 Total matches found:", matches.length);
+    console.log(
+      "🔍 All match IDs:",
+      matches.map((m: Match) => m.id)
+    );
+
+    // Get individual match scores (found by recursive search)
+    const individualMatches = matches.filter((match: Match) =>
+      match.id.includes("individual-match")
+    );
+    console.log("🔍 Individual matches found:", individualMatches);
+    console.log("🔍 Individual match count:", individualMatches.length);
+
+    if (individualMatches.length > 0) {
+      console.log("🔍 All individual matches found:", individualMatches);
+
+      // Find the match that corresponds to the first semifinal (WBB vs PinoySargo)
+      const semifinal1Match = individualMatches.find(
+        (match: Match) =>
+          match.player1?.team === "WBB" || match.player2?.team === "PinoySargo"
+      );
+
+      if (semifinal1Match) {
+        console.log("🎯 Found semifinal 1 match:", semifinal1Match);
+        semifinal1Score1 = semifinal1Match.player1Wins;
+        semifinal1Score2 = semifinal1Match.player2Wins;
+        console.log(
+          "📊 Semifinal 1 scores (WBB vs PinoySargo):",
+          semifinal1Score1,
+          semifinal1Score2
+        );
+      } else {
+        // Fallback to first match if no specific match found
+        const firstIndividualMatch = individualMatches[0];
+        console.log(
+          "🎯 Using first individual match as fallback:",
+          firstIndividualMatch
+        );
+        semifinal1Score1 = firstIndividualMatch.player1Wins;
+        semifinal1Score2 = firstIndividualMatch.player2Wins;
+        console.log(
+          "📊 Using first match scores for semifinal 1:",
+          semifinal1Score1,
+          semifinal1Score2
+        );
+      }
+
+      // Find the match that corresponds to the second semifinal (Team SG vs Karambola)
+      const semifinal2Match = individualMatches.find(
+        (match: Match) =>
+          match.player1?.team === "Team SG" ||
+          match.player2?.team === "Karambola"
+      );
+
+      if (semifinal2Match) {
+        console.log("🎯 Found semifinal 2 match:", semifinal2Match);
+        semifinal2Score1 = semifinal2Match.player1Wins;
+        semifinal2Score2 = semifinal2Match.player2Wins;
+        console.log(
+          "📊 Semifinal 2 scores (Team SG vs Karambola):",
+          semifinal2Score1,
+          semifinal2Score2
+        );
+      } else if (individualMatches.length > 1) {
+        // Fallback to second match if no specific match found
+        const secondIndividualMatch = individualMatches[1];
+        console.log(
+          "🎯 Using second individual match as fallback:",
+          secondIndividualMatch
+        );
+        semifinal2Score1 = secondIndividualMatch.player1Wins;
+        semifinal2Score2 = secondIndividualMatch.player2Wins;
+        console.log(
+          "📊 Using second match scores for semifinal 2:",
+          semifinal2Score1,
+          semifinal2Score2
+        );
+      } else {
+        console.log("⚠️ No second match found for semifinal 2");
+      }
+
+      console.log(
+        "🔍 Individual match details:",
+        individualMatches.map((m: Match) => ({
+          id: m.id,
+          p1: m.player1Wins,
+          p2: m.player2Wins,
+          team1: m.player1?.team,
+          team2: m.player2?.team,
+        }))
+      );
+    } else {
+      console.log("❌ No individual matches found");
+      // Fallback to current-match if no individual matches found
+      const currentMatch = matches.find(
+        (match: Match) => match.id === "current-match"
+      );
+      if (currentMatch) {
+        console.log("🎯 Found current match:", currentMatch);
+        console.log(
+          "🎯 Current match scores:",
+          currentMatch.player1Wins,
+          currentMatch.player2Wins
+        );
+
+        // Use the current match scores directly for semifinal 1
+        semifinal1Score1 = currentMatch.player1Wins;
+        semifinal1Score2 = currentMatch.player2Wins;
+
+        console.log(
+          "📊 Using current match scores for semifinal 1:",
+          semifinal1Score1,
+          semifinal1Score2
+        );
+      } else {
+        console.log("❌ No current match found either");
+      }
+    }
+  } else {
+    console.log("❌ No matches found at all");
+  }
+
+  // Tournament data with real scores
   const tournamentData: TournamentStage[] = [
     {
       title: "SEMIFINAL 1",
       matches: [
         {
-          team1: warriors,
-          team2: cavs,
-          score1: 3,
-          score2: 2,
+          team1: semifinal1Team1,
+          team2: semifinal1Team2,
+          score1: semifinal1Score1,
+          score2: semifinal1Score2,
         },
       ],
     },
@@ -62,10 +200,10 @@ const MainScore: React.FC = () => {
       title: "SEMIFINAL 2",
       matches: [
         {
-          team1: lakers,
-          team2: heat,
-          score1: 4,
-          score2: 1,
+          team1: semifinal2Team1,
+          team2: semifinal2Team2,
+          score1: semifinal2Score1,
+          score2: semifinal2Score2,
         },
       ],
     },
@@ -73,16 +211,22 @@ const MainScore: React.FC = () => {
       title: "FINALS",
       matches: [
         {
-          team1: lakers,
-          team2: warriors,
-          score1: 2,
-          score2: 1,
+          team1:
+            semifinal1Score1 > semifinal1Score2
+              ? semifinal1Team1
+              : semifinal1Team2,
+          team2:
+            semifinal2Score1 > semifinal2Score2
+              ? semifinal2Team1
+              : semifinal2Team2,
+          score1: 0,
+          score2: 0,
         },
       ],
     },
   ];
 
-  const renderMatch = (match: Match) => (
+  const renderMatch = (match: TournamentMatch) => (
     <div key={`${match.team1}-${match.team2}`} className="match-container">
       <div className="teams-row">
         <span className="team-name">{match.team1}</span>
