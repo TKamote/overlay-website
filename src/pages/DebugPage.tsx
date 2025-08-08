@@ -3,11 +3,9 @@ import { getUserTournamentData } from "../services/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import db from "../services/firebase";
 import type { UserTournamentData } from "../types/tournament";
-import Match1Display from "../components/Match1Display";
-import AllMatchesDisplay from "../components/AllMatchesDisplay";
-import "./TournamentsPage.css";
+import "./TournamentsPage.css"; // Reuse the same styling
 
-const TournamentsPage: React.FC = () => {
+const DebugPage: React.FC = () => {
   const [firebaseData, setFirebaseData] = useState<UserTournamentData>({
     teams: [],
     tournaments: [],
@@ -20,7 +18,7 @@ const TournamentsPage: React.FC = () => {
     const loadData = async () => {
       try {
         setLoading(true);
-        console.log("TournamentsPage: Loading Firebase data...");
+        console.log("DebugPage: Loading live Firebase data...");
 
         const { tournaments, teams } = await getUserTournamentData();
 
@@ -43,13 +41,13 @@ const TournamentsPage: React.FC = () => {
           rawData,
         });
 
-        console.log("TournamentsPage: Data loaded", {
+        console.log("DebugPage: Live data loaded", {
           teams,
           tournaments,
           rawData,
         });
       } catch (error) {
-        console.error("TournamentsPage: Error loading data", error);
+        console.error("DebugPage: Error loading data", error);
         setError(error instanceof Error ? error.message : "Unknown error");
       } finally {
         setLoading(false);
@@ -62,7 +60,7 @@ const TournamentsPage: React.FC = () => {
   if (loading) {
     return (
       <div className="tournaments-page">
-        <div className="loading">Loading live data from OwensCup...</div>
+        <div className="loading">Loading live Firebase data...</div>
       </div>
     );
   }
@@ -78,20 +76,15 @@ const TournamentsPage: React.FC = () => {
   return (
     <div className="tournaments-page">
       <div className="page-header">
-        <h1>Live OwensCup Data</h1>
-        <p className="subtitle">Real-time data from your Firebase database</p>
+        <h1>🔧 Live Firebase Debug Data</h1>
+        <p className="subtitle">
+          Real-time data from your Firebase database - Updated:{" "}
+          {new Date().toLocaleTimeString()}
+        </p>
       </div>
 
       <div className="data-grid">
-        {/* Match 1 (Semifinal 1) Section */}
-        <div className="data-section">
-          <h2>Match 1: Semifinal 1</h2>
-          <div className="data-cards">
-            <Match1Display />
-          </div>
-        </div>
-
-        {/* Raw Data Section */}
+        {/* Raw Data Section Only */}
         <div className="data-section">
           <h2>Raw Firebase Data</h2>
           <div className="data-cards">
@@ -103,17 +96,9 @@ const TournamentsPage: React.FC = () => {
             </div>
           </div>
         </div>
-
-        {/* All Active Matches Section */}
-        <div className="data-section">
-          <h2>All Active Matches</h2>
-          <div className="data-cards">
-            <AllMatchesDisplay />
-          </div>
-        </div>
       </div>
     </div>
   );
 };
 
-export default TournamentsPage;
+export default DebugPage;

@@ -1,0 +1,96 @@
+.players-ranking {
+  padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.players-ranking h2 {
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.rankings-table {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.rankings-header {
+  display: grid;
+  grid-template-columns: 80px 2fr 2fr 1fr 1fr 1fr;
+  gap: 15px;
+  padding: 15px 20px;
+  background: #f5f5f5;
+  font-weight: bold;
+  color: #333;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.ranking-row {
+  display: grid;
+  grid-template-columns: 80px 2fr 2fr 1fr 1fr 1fr;
+  gap: 15px;
+  padding: 12px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  align-items: center;
+}
+
+.ranking-row:hover {
+  background: #f9f9f9;
+}
+
+.ranking-row:nth-child(even) {
+  background: #fafafa;
+}
+
+.ranking-row:nth-child(even):hover {
+  background: #f0f0f0;
+}
+
+.rank {
+  font-weight: bold;
+  color: #666;
+}
+
+.player-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.team-name {
+  color: #666;
+  font-size: 14px;
+}
+
+.wins,
+.losses {
+  text-align: center;
+  font-weight: 500;
+}
+
+.wins {
+  color: #4caf50;
+}
+
+.losses {
+  color: #f44336;
+}
+
+.win-rate {
+  text-align: center;
+  font-weight: bold;
+  color: #2196f3;
+}
+
+.players-ranking-loading,
+.players-ranking-error {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+}
+
+.players-ranking-error {
+  color: #d32f2f;
+}

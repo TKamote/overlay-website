@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getUserTournamentData } from "../services/firebase";
+import type { TeamData } from "../types/tournament";
 
 interface TournamentResult {
   id: string;
@@ -55,7 +56,7 @@ const TournamentHistory: React.FC<TournamentHistoryProps> = ({
             winner,
             runnerUp,
             finalScore: `${finalScores[0]}-${finalScores[1]}`,
-            participants: teams.map((team) => team.name),
+            participants: teams.map((team: TeamData) => team.name),
             status: "completed",
           };
 
@@ -98,7 +99,7 @@ const TournamentHistory: React.FC<TournamentHistoryProps> = ({
             winner,
             runnerUp,
             finalScore: `${finalScores[0]}-${finalScores[1]}`,
-            participants: teams.map((team) => team.name),
+            participants: teams.map((team: TeamData) => team.name),
             status: "completed",
           };
 

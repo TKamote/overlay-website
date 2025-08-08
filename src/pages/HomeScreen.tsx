@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import OverlayContainer from "../components/OverlayContainer";
 import TournamentsPage from "./TournamentsPage";
+import DebugPage from "./DebugPage";
 import TournamentHistory from "../components/TournamentHistory";
+import TeamsList from "../components/TeamsList";
+import PlayersRanking from "../components/PlayersRanking";
 import "./HomeScreen.css";
 
 const HomeScreen: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<
-    "overlay" | "tournaments" | "history"
+    "overlay" | "tournaments" | "debug" | "history" | "teams" | "rankings"
   >("overlay");
 
   const renderPage = () => {
@@ -15,8 +18,14 @@ const HomeScreen: React.FC = () => {
         return <OverlayContainer />;
       case "tournaments":
         return <TournamentsPage />;
+      case "debug":
+        return <DebugPage />;
       case "history":
         return <TournamentHistory />;
+      case "teams":
+        return <TeamsList />;
+      case "rankings":
+        return <PlayersRanking />;
       default:
         return <OverlayContainer />;
     }
@@ -39,6 +48,24 @@ const HomeScreen: React.FC = () => {
           onClick={() => setCurrentPage("tournaments")}
         >
           TOURNAMENTS
+        </button>
+        <button
+          className={`nav-button ${currentPage === "debug" ? "active" : ""}`}
+          onClick={() => setCurrentPage("debug")}
+        >
+          DEBUG
+        </button>
+        <button
+          className={`nav-button ${currentPage === "teams" ? "active" : ""}`}
+          onClick={() => setCurrentPage("teams")}
+        >
+          TEAMS
+        </button>
+        <button
+          className={`nav-button ${currentPage === "rankings" ? "active" : ""}`}
+          onClick={() => setCurrentPage("rankings")}
+        >
+          RANKINGS
         </button>
         <button
           className={`nav-button ${currentPage === "history" ? "active" : ""}`}

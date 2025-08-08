@@ -1,0 +1,150 @@
+.teams-list {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.teams-list h2 {
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.teams-three-column-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.teams-column {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  height: fit-content;
+}
+
+.teams-column h3 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 20px;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 10px;
+}
+
+.teams-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.team-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+}
+
+.team-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.team-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  font-size: 18px;
+  color: white;
+}
+
+.team-name {
+  margin: 0;
+  color: #333;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.team-details p {
+  margin: 8px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.team-details strong {
+  color: #333;
+}
+
+.tournament-structure {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.structure-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+  text-align: center;
+}
+
+.structure-card h4 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.structure-card p {
+  color: #666;
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+.blank-section {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 40px 20px;
+  text-align: center;
+  border: 2px dashed #e0e0e0;
+  color: #666;
+  font-style: italic;
+}
+
+.blank-section p {
+  margin: 0;
+  font-size: 16px;
+}
+
+.teams-list-loading,
+.teams-list-error {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+}
+
+.teams-list-error {
+  color: #d32f2f;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 1200px) {
+  .teams-three-column-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .teams-list {
+    max-width: 800px;
+  }
+}
