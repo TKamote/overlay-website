@@ -7,6 +7,7 @@ import {
   updateDoc,
   getDocs,
   getDoc,
+  Firestore,
 } from "firebase/firestore";
 
 // OwensCup Firebase configuration
@@ -20,9 +21,19 @@ const firebaseConfig = {
   measurementId: "G-E11GSM385Z",
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// Initialize Firebase with error handling
+let app;
+let db: Firestore;
+
+try {
+  console.log("Initializing Firebase...");
+  app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+  console.log("Firebase initialized successfully");
+} catch (error) {
+  console.error("Firebase initialization error:", error);
+  throw error;
+}
 
 // Collection references
 export const teamsCollection = collection(db, "teams");

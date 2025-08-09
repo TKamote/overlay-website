@@ -1,0 +1,17 @@
+RewriteEngine On
+
+# Handle React Router
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /index.html [L]
+
+# Basic MIME types
+<IfModule mod_mime.c>
+    AddType application/javascript .js
+    AddType text/css .css
+</IfModule>
+
+# Simple JavaScript MIME type fix
+<FilesMatch "\.js$">
+    Header set Content-Type "application/javascript"
+</FilesMatch>

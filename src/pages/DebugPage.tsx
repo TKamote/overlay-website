@@ -1,101 +1,126 @@
 import React, { useState, useEffect } from "react";
-import { getUserTournamentData } from "../services/firebase";
+import { useData } from "../contexts/DataContext";
 import { doc, getDoc } from "firebase/firestore";
 import db from "../services/firebase";
-import type { UserTournamentData } from "../types/tournament";
-import "./TournamentsPage.css"; // Reuse the same styling
 
 const DebugPage: React.FC = () => {
-  const [firebaseData, setFirebaseData] = useState<UserTournamentData>({
-    teams: [],
-    tournaments: [],
-    rawData: null,
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data } = useData();
+  const [connectionStatus, setConnectionStatus] =
+    useState<string>("Checking...");
+  const [browserInfo, setBrowserInfo] = useState<any>({});
 
   useEffect(() => {
-    const loadData = async () => {
+    // Check Firebase connection
+    const checkFirebaseConnection = async () => {
       try {
-        setLoading(true);
-        console.log("DebugPage: Loading live Firebase data...");
+        console.log("Testing Firebase connection...");
+        setConnectionStatus("Testing Firebase connection...");
 
-        const { tournaments, teams } = await getUserTournamentData();
-
-        // Get the raw data for debugging
-        const userTournamentRef = doc(
-          db,
-          "users",
-          "hyBfhSIYRsMno2VYRRfIgPT8EmN2",
-          "tournament",
-          "current"
-        );
-        const userTournamentDoc = await getDoc(userTournamentRef);
-        const rawData = userTournamentDoc.exists()
-          ? userTournamentDoc.data()
-          : null;
-
-        setFirebaseData({
-          teams,
-          tournaments,
-          rawData,
-        });
-
-        console.log("DebugPage: Live data loaded", {
-          teams,
-          tournaments,
-          rawData,
-        });
+        // Simple test to see if Firebase is working
+        const testDocRef = doc(db, "test", "test");
+        await getDoc(testDocRef);
+        setConnectionStatus("Firebase connected successfully");
       } catch (error) {
-        console.error("DebugPage: Error loading data", error);
-        setError(error instanceof Error ? error.message : "Unknown error");
-      } finally {
-        setLoading(false);
+        console.error("Firebase connection error:", error);
+        setConnectionStatus(`Firebase error: ${error}`);
       }
     };
 
-    loadData();
+    // Get browser information
+    setBrowserInfo({
+      userAgent: navigator.userAgent,
+      language: navigator.language,
+      cookieEnabled: navigator.cookieEnabled,
+      onLine: navigator.onLine,
+      platform: navigator.platform,
+      url: window.location.href,
+      domain: window.location.hostname,
+      protocol: window.location.protocol,
+    });
+
+    checkFirebaseConnection();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="tournaments-page">
-        <div className="loading">Loading live Firebase data...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="tournaments-page">
-        <div className="error">Error: {error}</div>
-      </div>
-    );
-  }
-
   return (
-    <div className="tournaments-page">
-      <div className="page-header">
-        <h1>🔧 Live Firebase Debug Data</h1>
-        <p className="subtitle">
-          Real-time data from your Firebase database - Updated:{" "}
-          {new Date().toLocaleTimeString()}
-        </p>
+    <div style={{ padding: "20px", fontFamily: "monospace" }}>
+      <h1>🔧 Debug Page - tkamot.com</h1>
+
+      <h2>🌐 Connection Status</h2>
+      <div style={{ marginBottom: "20px" }}>
+        <strong>Firebase:</strong> {connectionStatus}
       </div>
 
-      <div className="data-grid">
-        {/* Raw Data Section Only */}
-        <div className="data-section">
-          <h2>Raw Firebase Data</h2>
-          <div className="data-cards">
-            <div className="data-card raw-data-card">
-              <h3>Complete Firebase Document</h3>
-              <div className="raw-data">
-                <pre>{JSON.stringify(firebaseData.rawData, null, 2)}</pre>
-              </div>
-            </div>
-          </div>
-        </div>
+      <h2>📊 Data Status</h2>
+      <div style={{ marginBottom: "20px" }}>
+        <strong>Loading:</strong> {data.isLoading ? "Yes" : "No"}
+        <br />
+        <strong>Error:</strong> {data.error || "None"}
+        <br />
+        <strong>Teams:</strong> {data.teams.length}
+        <br />
+        <strong>Tournaments:</strong> {data.tournaments.length}
+        <br />
+        <strong>Last Updated:</strong> {data.lastUpdated.toLocaleString()}
+      </div>
+
+      <h2>🌍 Browser Information</h2>
+      <div style={{ marginBottom: "20px" }}>
+        <strong>URL:</strong> {browserInfo.url}
+        <br />
+        <strong>Domain:</strong> {browserInfo.domain}
+        <br />
+        <strong>Protocol:</strong> {browserInfo.protocol}
+        <br />
+        <strong>Online:</strong> {browserInfo.onLine ? "Yes" : "No"}
+        <br />
+        <strong>Language:</strong> {browserInfo.language}
+        <br />
+        <strong>Platform:</strong> {browserInfo.platform}
+      </div>
+
+      <h2>📋 Raw Data</h2>
+      <div
+        style={{
+          backgroundColor: "#f5f5f5",
+          padding: "10px",
+          borderRadius: "5px",
+          maxHeight: "300px",
+          overflow: "auto",
+        }}
+      >
+        <pre>{JSON.stringify(data.rawData, null, 2)}</pre>
+      </div>
+
+      <h2>🛠️ Troubleshooting</h2>
+      <div style={{ marginTop: "20px" }}>
+        <h3>If the site is not loading:</h3>
+        <ol>
+          <li>Check if Firebase is accessible (see connection status above)</li>
+          <li>Verify your domain DNS settings point to the correct server</li>
+          <li>Ensure the web server is running and serving the dist/ folder</li>
+          <li>Check browser console for JavaScript errors</li>
+          <li>Try accessing the site in an incognito/private window</li>
+        </ol>
+
+        <h3>Common Issues:</h3>
+        <ul>
+          <li>
+            <strong>CORS Issues:</strong> Check if your server allows
+            cross-origin requests
+          </li>
+          <li>
+            <strong>Firebase Rules:</strong> Ensure Firebase security rules
+            allow read access
+          </li>
+          <li>
+            <strong>Network Issues:</strong> Check if the domain resolves
+            correctly
+          </li>
+          <li>
+            <strong>SSL/HTTPS:</strong> Ensure proper SSL certificate for
+            tkamot.com
+          </li>
+        </ul>
       </div>
     </div>
   );
