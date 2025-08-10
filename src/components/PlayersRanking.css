@@ -10,11 +10,33 @@
   text-align: center;
 }
 
+/* Tournament Info Section */
+.tournament-info-section {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.tournament-details h3 {
+  color: #333;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.tournament-details p {
+  color: #666;
+  margin: 5px 0;
+  text-align: center;
+}
+
 .rankings-table {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  margin-bottom: 20px;
 }
 
 .rankings-header {
@@ -62,6 +84,13 @@
 .team-name {
   color: #666;
   font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.team-icon {
+  font-size: 16px;
 }
 
 .wins,
@@ -84,6 +113,76 @@
   color: #2196f3;
 }
 
+/* Teams Summary Section */
+.teams-summary {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.teams-summary h3 {
+  color: #333;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.teams-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.team-card {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  transition: transform 0.2s ease;
+}
+
+.team-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.team-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.team-header .team-icon {
+  font-size: 24px;
+}
+
+.team-header h4 {
+  color: #333;
+  margin: 0;
+  font-size: 18px;
+}
+
+.team-details p {
+  color: #666;
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.team-details strong {
+  color: #333;
+}
+
+.no-rankings {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 .players-ranking-loading,
 .players-ranking-error {
   text-align: center;
@@ -93,4 +192,26 @@
 
 .players-ranking-error {
   color: #d32f2f;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .rankings-header,
+  .ranking-row {
+    grid-template-columns: 60px 1.5fr 1.5fr 1fr 1fr 1fr;
+    gap: 10px;
+    padding: 10px 15px;
+  }
+
+  .teams-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .team-name {
+    font-size: 12px;
+  }
+
+  .team-icon {
+    font-size: 14px;
+  }
 }

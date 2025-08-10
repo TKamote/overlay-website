@@ -5,7 +5,7 @@ import React, {
   useEffect,
   type ReactNode,
 } from "react";
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot, collection, getDocs } from "firebase/firestore";
 import db from "../services/firebase";
 import type {
   TeamData,
@@ -60,13 +60,28 @@ interface DataContextType {
   getActiveTournament: () => Tournament | undefined;
 }
 
-const DataContext = createContext<DataContextType | undefined>(undefined);
+const DataContext = createContext<DataContextType>({
+  data: {
+    rawData: null,
+    tournaments: [],
+    teams: [],
+    allPlayers: [],
+    activeMatches: [],
+    playerRankings: [],
+    isLoading: true,
+    lastUpdated: new Date(),
+    error: null,
+  },
+  refreshData: () => {},
+  getTeamById: () => undefined,
+  getPlayerById: () => undefined,
+  getActiveTournament: () => undefined,
+});
 
 export const useData = () => {
+  console.log("useData hook called");
   const context = useContext(DataContext);
-  if (!context) {
-    throw new Error("useData must be used within a DataProvider");
-  }
+  console.log("useData context value:", context);
   return context;
 };
 
@@ -77,8 +92,10 @@ interface DataProviderProps {
 
 export const DataProvider: React.FC<DataProviderProps> = ({
   children,
-  userId = "hyBfhSIYRsMno2VYRRfIgPT8EmN2",
+  userId = import.meta.env.VITE_FIREBASE_USER_ID ||
+    "quGTVYdwKDhiF7TNIsk40brjRg33", // Configurable user ID
 }) => {
+  console.log("DataProvider rendering with userId:", userId);
   const [data, setData] = useState<CentralizedData>({
     rawData: null,
     tournaments: [],
@@ -91,114 +108,230 @@ export const DataProvider: React.FC<DataProviderProps> = ({
     error: null,
   });
 
+  // Firebase path for tournament data - updated to match actual Firebase structure
+  const FIREBASE_PATH = `users/${userId}/tournament/current`;
+
   // Process raw Firebase data into structured format
-  const processFirebaseData = (
-    rawData: FirebaseDocumentData
-  ): CentralizedData => {
+  const processFirebaseData = (rawData: any): CentralizedData => {
     const teams: TeamData[] = [];
     const allPlayers: Player[] = [];
     const tournaments: Tournament[] = [];
     const activeMatches: Match[] = [];
     const playerRankings: PlayerRanking[] = [];
 
-    // Extract teams from confirmedTeams or other sources
-    if (rawData.confirmedTeams) {
-      teams.push(...rawData.confirmedTeams);
+    console.log("Processing Firebase data:", rawData);
+
+    // Extract teams from confirmedTeams - YOUR ACTUAL DATA STRUCTURE
+    if (rawData.confirmedTeams && Array.isArray(rawData.confirmedTeams)) {
+      teams.push(
+        ...rawData.confirmedTeams.map((team: any) => ({
+          id: team.id,
+          name: team.name,
+          captain: team.captain,
+          manager: team.manager,
+          color: team.color,
+          icon: team.icon,
+          players: team.players
+            ? team.players.map((p: any) => p.name).join(", ")
+            : "",
+        }))
+      );
     }
 
     // Extract players from teams
     teams.forEach((team) => {
-      if (team.players) {
-        const teamPlayers = team.players.split(",").map((playerName) => ({
-          id: `${team.id}-${playerName.trim()}`,
-          name: playerName.trim(),
-          team: team.name,
-          score: 0, // Will be calculated from matches
-          wins: 0, // Will be calculated from matches
-          losses: 0, // Will be calculated from matches
-        }));
-        allPlayers.push(...teamPlayers);
+      if (rawData.confirmedTeams) {
+        const teamData = rawData.confirmedTeams.find(
+          (t: any) => t.id === team.id
+        );
+        if (teamData && teamData.players && Array.isArray(teamData.players)) {
+          const teamPlayers = teamData.players.map((player: any) => ({
+            id: player.id,
+            name: player.name,
+            team: team.name,
+            score: 0,
+            wins: 0,
+            losses: 0,
+          }));
+          allPlayers.push(...teamPlayers);
+        }
       }
     });
 
-    // Process semifinal tournaments
+    // Process semifinal tournaments - YOUR ACTUAL DATA STRUCTURE
     if (rawData.semiFinal1) {
+      const semiFinal1Data = rawData.semiFinal1;
+      const team1 = teams.find(
+        (t) => t.id === semiFinal1Data.matches?.[0]?.team1Id
+      );
+      const team2 = teams.find(
+        (t) => t.id === semiFinal1Data.matches?.[0]?.team2Id
+      );
+
       const semiFinal1: Tournament = {
         id: "semi-final-1",
-        name: "Owens Cup 2024 - Semifinal A",
-        status: "active",
+        name: `${rawData.tournamentName || "PBS Invitational"} - Semifinal A`,
+        status: semiFinal1Data.isCompleted ? "finished" : "active",
         players: allPlayers.filter((p) =>
           teams.some(
             (t) =>
-              t.name === p.team &&
-              (t.name === rawData.semiFinal1?.teams?.[0]?.name ||
-                t.name === rawData.semiFinal1?.teams?.[1]?.name)
+              t.name === p.team && (t.id === team1?.id || t.id === team2?.id)
           )
         ),
-        matches: [], // Will be populated from match data
+        matches:
+          semiFinal1Data.matches?.map((match: any) => ({
+            id: match.id,
+            player1: {
+              id: match.team1Id,
+              name: team1?.name || "Team 1",
+              score: 0,
+              team: team1?.name,
+            },
+            player2: {
+              id: match.team2Id,
+              name: team2?.name || "Team 2",
+              score: 0,
+              team: team2?.name,
+            },
+            player1Wins: match.team1Score || 0,
+            player2Wins: match.team2Score || 0,
+            raceTo: parseInt(rawData.raceToScore) || 5,
+            isFeatured: false,
+            status: match.isCompleted ? "finished" : "active",
+          })) || [],
         currentRound: 1,
         totalRounds: 3,
         overallScore: {
-          team1Score: rawData.semiFinal1?.teamScores?.[0] || 0,
-          team2Score: rawData.semiFinal1?.teamScores?.[1] || 0,
-          team1Name:
-            teams.find((t) => t.name === rawData.semiFinal1?.teams?.[0]?.name)
-              ?.name || "Team 1",
-          team2Name:
-            teams.find((t) => t.name === rawData.semiFinal1?.teams?.[1]?.name)
-              ?.name || "Team 2",
+          team1Score: team1
+            ? semiFinal1Data.matches?.reduce(
+                (sum: number, m: any) => sum + (m.team1Score || 0),
+                0
+              ) || 0
+            : 0,
+          team2Score: team2
+            ? semiFinal1Data.matches?.reduce(
+                (sum: number, m: any) => sum + (m.team2Score || 0),
+                0
+              ) || 0
+            : 0,
+          team1Name: team1?.name || "Team 1",
+          team2Name: team2?.name || "Team 2",
         },
       };
       tournaments.push(semiFinal1);
     }
 
     if (rawData.semiFinal2) {
+      const semiFinal2Data = rawData.semiFinal2;
+      const team1 = teams.find(
+        (t) => t.id === semiFinal2Data.matches?.[0]?.team1Id
+      );
+      const team2 = teams.find(
+        (t) => t.id === semiFinal2Data.matches?.[0]?.team2Id
+      );
+
       const semiFinal2: Tournament = {
         id: "semi-final-2",
-        name: "Owens Cup 2024 - Semifinal B",
-        status: "active",
+        name: `${rawData.tournamentName || "PBS Invitational"} - Semifinal B`,
+        status: semiFinal2Data.isCompleted ? "finished" : "active",
         players: allPlayers.filter((p) =>
           teams.some(
             (t) =>
-              t.name === p.team &&
-              (t.name === rawData.semiFinal2?.teams?.[0]?.name ||
-                t.name === rawData.semiFinal2?.teams?.[1]?.name)
+              t.name === p.team && (t.id === team1?.id || t.id === team2?.id)
           )
         ),
-        matches: [],
+        matches:
+          semiFinal2Data.matches?.map((match: any) => ({
+            id: match.id,
+            player1: {
+              id: match.team1Id,
+              name: team1?.name || "Team 1",
+              score: 0,
+              team: team1?.name,
+            },
+            player2: {
+              id: match.team2Id,
+              name: team2?.name || "Team 2",
+              score: 0,
+              team: team2?.name,
+            },
+            player1Wins: match.team1Score || 0,
+            player2Wins: match.team2Score || 0,
+            raceTo: parseInt(rawData.raceToScore) || 5,
+            isFeatured: false,
+            status: match.isCompleted ? "finished" : "active",
+          })) || [],
         currentRound: 1,
         totalRounds: 3,
         overallScore: {
-          team1Score: rawData.semiFinal2?.teamScores?.[0] || 0,
-          team2Score: rawData.semiFinal2?.teamScores?.[1] || 0,
-          team1Name:
-            teams.find((t) => t.name === rawData.semiFinal2?.teams?.[0]?.name)
-              ?.name || "Team 3",
-          team2Name:
-            teams.find((t) => t.name === rawData.semiFinal2?.teams?.[1]?.name)
-              ?.name || "Team 4",
+          team1Score: team1
+            ? semiFinal2Data.matches?.reduce(
+                (sum: number, m: any) => sum + (m.team1Score || 0),
+                0
+              ) || 0
+            : 0,
+          team2Score: team2
+            ? semiFinal2Data.matches?.reduce(
+                (sum: number, m: any) => sum + (m.team2Score || 0),
+                0
+              ) || 0
+            : 0,
+          team1Name: team1?.name || "Team 1",
+          team2Name: team2?.name || "Team 2",
         },
       };
       tournaments.push(semiFinal2);
     }
 
-    // Process final tournament
+    // Process final tournament - YOUR ACTUAL DATA STRUCTURE
     if (rawData.final) {
+      const finalData = rawData.final;
+      const team1 = teams.find((t) => t.id === finalData.matches?.[0]?.team1Id);
+      const team2 = teams.find((t) => t.id === finalData.matches?.[0]?.team2Id);
+
       const final: Tournament = {
         id: "tournament-final",
-        name: "Owens Cup 2024 - FINAL",
-        status: "active",
+        name: `${rawData.tournamentName || "PBS Invitational"} - FINAL`,
+        status: finalData.isCompleted ? "finished" : "active",
         players: allPlayers,
-        matches: [],
+        matches:
+          finalData.matches?.map((match: any) => ({
+            id: match.id,
+            player1: {
+              id: match.team1Id,
+              name: team1?.name || "Team 1",
+              score: 0,
+              team: team1?.name,
+            },
+            player2: {
+              id: match.team2Id,
+              name: team2?.name || "Team 2",
+              score: 0,
+              team: team2?.name,
+            },
+            player1Wins: match.team1Score || 0,
+            player2Wins: match.team2Score || 0,
+            raceTo: parseInt(rawData.raceToScore) || 5,
+            isFeatured: false,
+            status: match.isCompleted ? "finished" : "active",
+          })) || [],
         currentRound: 3,
         totalRounds: 3,
         overallScore: {
-          team1Score:
-            rawData.final?.teamScores?.[0] || rawData.final?.team1Score || 0,
-          team2Score:
-            rawData.final?.teamScores?.[1] || rawData.final?.team2Score || 0,
-          team1Name: rawData.final?.teams?.[0]?.name || "Warriors",
-          team2Name: rawData.final?.teams?.[1]?.name || "Cavs",
+          team1Score: team1
+            ? finalData.matches?.reduce(
+                (sum: number, m: any) => sum + (m.team1Score || 0),
+                0
+              ) || 0
+            : 0,
+          team2Score: team2
+            ? finalData.matches?.reduce(
+                (sum: number, m: any) => sum + (m.team2Score || 0),
+                0
+              ) || 0
+            : 0,
+          team1Name: team1?.name || "Team 1",
+          team2Name: team2?.name || "Team 2",
         },
       };
       tournaments.push(final);
@@ -240,30 +373,46 @@ export const DataProvider: React.FC<DataProviderProps> = ({
   // Set up real-time Firebase listener
   useEffect(() => {
     console.log("Setting up real-time Firebase listener...");
+    console.log("Connecting to Firebase path:", FIREBASE_PATH);
+    console.log("Using user ID:", userId);
 
-    const userTournamentRef = doc(db, "users", userId, "tournament", "current");
+    const docRef = doc(db, "users", userId, "tournament", "current");
+    console.log("Document reference created:", docRef.path);
 
-    // Real-time listener - more efficient than polling
+    // Real-time listener for Firebase data
     const unsubscribe = onSnapshot(
-      userTournamentRef,
+      docRef,
       (docSnapshot) => {
+        console.log("Firebase snapshot received");
+        console.log("Document exists:", docSnapshot.exists());
+        console.log("Document ID:", docSnapshot.id);
+        console.log("Document path:", docSnapshot.ref.path);
+
         if (docSnapshot.exists()) {
+          console.log("✅ Firebase data received from:", FIREBASE_PATH);
           const rawData = docSnapshot.data() as FirebaseDocumentData;
-          console.log("Real-time Firebase update received:", rawData);
+          console.log("Firebase data:", rawData);
+          console.log("Data keys:", Object.keys(rawData));
 
           const processedData = processFirebaseData(rawData);
           setData(processedData);
         } else {
-          console.log("No tournament data found");
+          console.log("❌ No data found at:", FIREBASE_PATH);
+          console.log("Document does not exist or is empty");
           setData((prev) => ({
             ...prev,
             isLoading: false,
-            error: "No tournament data found",
+            error:
+              "No tournament data found at users/" +
+              userId +
+              "/tournament/current",
           }));
         }
       },
       (error) => {
         console.error("Firebase listener error:", error);
+        console.error("Error code:", error.code);
+        console.error("Error message:", error.message);
         setData((prev) => ({
           ...prev,
           isLoading: false,
@@ -303,6 +452,8 @@ export const DataProvider: React.FC<DataProviderProps> = ({
     getPlayerById,
     getActiveTournament,
   };
+
+  console.log("DataProvider providing context value:", contextValue);
 
   return (
     <DataContext.Provider value={contextValue}>{children}</DataContext.Provider>

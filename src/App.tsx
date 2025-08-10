@@ -2,7 +2,6 @@ import React, { Suspense } from "react";
 import HomeScreen from "./pages/HomeScreen";
 import { DataProvider } from "./contexts/DataContext";
 import "./global.css";
-import "./App.css";
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component<

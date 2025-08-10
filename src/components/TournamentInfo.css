@@ -101,6 +101,23 @@
   margin-bottom: var(--spacing-lg);
 }
 
+.team-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.team-logo {
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--spacing-xs);
+}
+
+.team-icon {
+  font-size: var(--font-size-xl);
+  margin-right: var(--spacing-xs);
+}
+
 .tournament-team-name {
   font-size: var(--font-size-base);
   color: var(--text-primary);
@@ -150,6 +167,75 @@
   font-size: var(--font-size-xl);
   color: var(--text-primary);
   font-weight: var(--font-weight-bold);
+}
+
+/* Individual Matches Styles */
+.individual-matches {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-secondary);
+}
+
+.individual-matches h4 {
+  color: var(--text-accent);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-md);
+  text-transform: uppercase;
+}
+
+.matches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--spacing-sm);
+}
+
+.individual-match {
+  background: var(--bg-card);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-primary);
+  text-align: center;
+}
+
+.match-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-bold);
+  display: block;
+  margin-bottom: var(--spacing-xs);
+}
+
+.match-score {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-bold);
+}
+
+.match-winner {
+  font-size: var(--font-size-xs);
+  color: var(--primary-gold);
+  font-weight: var(--font-weight-bold);
+  display: block;
+  margin-top: var(--spacing-xs);
+}
+
+/* Current Match Indicator */
+.current-match-indicator {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-sm);
+  background: var(--primary-blue);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-accent);
+}
+
+.current-match-label {
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
 }
 
 .tournament-match-display {
@@ -207,5 +293,9 @@
 
   .tournament-team-points {
     font-size: var(--font-size-2xl);
+  }
+
+  .matches-grid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   }
 }

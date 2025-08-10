@@ -1,5 +1,6 @@
 import React from "react";
 import type { TournamentManager, Tournament } from "../types/tournament";
+import { useData } from "../contexts/DataContext";
 import "./TournamentInfo.css";
 
 interface TournamentInfoProps {
@@ -11,7 +12,14 @@ const TournamentInfo: React.FC<TournamentInfoProps> = ({
   tournamentManager,
   displaySize = "full-screen",
 }) => {
+  const { data } = useData();
   const tournaments = Object.values(tournamentManager.tournaments);
+  const rawData = data.rawData;
+
+  // Get team information from confirmedTeams
+  const confirmedTeams = rawData?.confirmedTeams || [];
+  const team1 = confirmedTeams[0];
+  const team2 = confirmedTeams[1];
 
   // Check if Finals are active (any team in final has scores > 0)
   const finalTournament = tournaments.find((t) => t.id === "tournament-final");
@@ -49,9 +57,16 @@ const TournamentInfo: React.FC<TournamentInfoProps> = ({
 
           {tournament.overallScore && (
             <div className="tournament-score-display">
-              <span className="tournament-team-name">
-                {tournament.overallScore.team1Name}
-              </span>
+              <div className="team-info">
+                {team1 && (
+                  <div className="team-logo">
+                    <span className="team-icon">{team1.icon || "🏆"}</span>
+                  </div>
+                )}
+                <span className="tournament-team-name">
+                  {tournament.overallScore.team1Name}
+                </span>
+              </div>
               <span
                 className={`tournament-team-points ${
                   tournament.overallScore.team1Score >= 5 ? "winner" : ""
@@ -73,11 +88,46 @@ const TournamentInfo: React.FC<TournamentInfoProps> = ({
                   <span className="winner-indicator">🏆</span>
                 )}
               </span>
-              <span className="tournament-team-name">
-                {tournament.overallScore.team2Name}
-              </span>
+              <div className="team-info">
+                <span className="tournament-team-name">
+                  {tournament.overallScore.team2Name}
+                </span>
+                {team2 && (
+                  <div className="team-logo">
+                    <span className="team-icon">{team2.icon || "🛡️"}</span>
+                  </div>
+                )}
+              </div>
             </div>
           )}
+
+          {/* Current match indicator */}
+          {rawData?.semiFinal1?.currentMatch &&
+            tournament.id === "semi-final-1" && (
+              <div className="current-match-indicator">
+                <span className="current-match-label">
+                  Current: {rawData.semiFinal1.currentMatch}
+                </span>
+              </div>
+            )}
+
+          {rawData?.semiFinal2?.currentMatch &&
+            tournament.id === "semi-final-2" && (
+              <div className="current-match-indicator">
+                <span className="current-match-label">
+                  Current: {rawData.semiFinal2.currentMatch}
+                </span>
+              </div>
+            )}
+
+          {rawData?.final?.currentMatch &&
+            tournament.id === "tournament-final" && (
+              <div className="current-match-indicator">
+                <span className="current-match-label">
+                  Current: {rawData.final.currentMatch}
+                </span>
+              </div>
+            )}
 
           {tournament.featuredMatch && (
             <div className="tournament-match-display">
@@ -102,6 +152,34 @@ const TournamentInfo: React.FC<TournamentInfoProps> = ({
               Race to {tournament.featuredMatch.raceTo}
             </div>
           )}
+
+          {/* Current match indicator */}
+          {rawData?.semiFinal1?.currentMatch &&
+            tournament.id === "semi-final-1" && (
+              <div className="current-match-indicator">
+                <span className="current-match-label">
+                  Current: {rawData.semiFinal1.currentMatch}
+                </span>
+              </div>
+            )}
+
+          {rawData?.semiFinal2?.currentMatch &&
+            tournament.id === "semi-final-2" && (
+              <div className="current-match-indicator">
+                <span className="current-match-label">
+                  Current: {rawData.semiFinal2.currentMatch}
+                </span>
+              </div>
+            )}
+
+          {rawData?.final?.currentMatch &&
+            tournament.id === "tournament-final" && (
+              <div className="current-match-indicator">
+                <span className="current-match-label">
+                  Current: {rawData.final.currentMatch}
+                </span>
+              </div>
+            )}
         </div>
       ))}
     </div>

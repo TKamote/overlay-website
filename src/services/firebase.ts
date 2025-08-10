@@ -43,24 +43,28 @@ export const matchesCollection = collection(db, "matches");
 
 // User's tournament data (actual structure)
 export const getUserTournamentData = async (
-  userId: string = "hyBfhSIYRsMno2VYRRfIgPT8EmN2"
+  userId: string = import.meta.env.VITE_FIREBASE_USER_ID ||
+    "quGTVYdwKDhiF7TNIsk40brjRg33"
 ) => {
   try {
-    console.log("Fetching user tournament data for userId:", userId);
+    console.log("Fetching tournament data...");
+    console.log("Firebase project ID:", firebaseConfig.projectId);
+    console.log("Firebase app initialized:", !!app);
+    console.log("Firestore instance:", !!db);
 
-    // Get the user's tournament document
-    const userTournamentRef = doc(db, "users", userId, "tournament", "current");
-    console.log(
-      "Looking for document at path: users/",
-      userId,
-      "/tournament/current"
-    );
+    // Get the tournament document
+    const tournamentRef = doc(db, "current");
+    console.log("Looking for document at path: current");
+    console.log("Document reference:", tournamentRef);
 
-    const userTournamentDoc = await getDoc(userTournamentRef);
+    const userTournamentDoc = await getDoc(tournamentRef);
+    console.log("Document exists:", userTournamentDoc.exists());
+    console.log("Document ID:", userTournamentDoc.id);
+    console.log("Document path:", userTournamentDoc.ref.path);
 
     if (userTournamentDoc.exists()) {
       const data = userTournamentDoc.data();
-      console.log("User tournament data:", data);
+      console.log("✅ User tournament data found:", data);
       console.log("Data keys:", Object.keys(data));
       console.log("Data structure details:");
 
@@ -136,13 +140,9 @@ export const getUserTournamentData = async (
         rawData: data, // Include the raw data for overlay processing
       };
     } else {
+      console.log("No tournament data found at path: current");
       console.log(
-        "No user tournament data found at path: users/",
-        userId,
-        "/tournament/current"
-      );
-      console.log(
-        "Document does not exist. Check the user ID and path in Firebase console."
+        "Document does not exist. Check the path in Firebase console."
       );
       return { teams: [], tournaments: [] };
     }

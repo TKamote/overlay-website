@@ -73,16 +73,39 @@ const OverlayContainer: React.FC = () => {
   }
 
   const { tournamentManager } = overlayData;
+  const rawData = data.rawData;
 
   return (
     <div className="overlay-container">
-      {/* Main Content - Only Tournament Info */}
+      {/* Main Content - Tournament Info */}
       <main className="overlay-main">
         <TournamentInfo
           tournamentManager={tournamentManager}
           displaySize="overlay"
         />
       </main>
+
+      {/* Tournament Status Bar */}
+      {rawData && (
+        <div className="tournament-status-bar">
+          <div className="status-item">
+            <span className="status-label">Tournament:</span>
+            <span className="status-value">
+              {rawData.tournamentName || "Owens Cup 2024"}
+            </span>
+          </div>
+          <div className="status-item">
+            <span className="status-label">Race to:</span>
+            <span className="status-value">{rawData.raceToScore || 5}</span>
+          </div>
+          <div className="status-item">
+            <span className="status-label">Organizer:</span>
+            <span className="status-value">
+              {rawData.organizer || "Unknown"}
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Last Updated Info */}
       <div className="last-updated">

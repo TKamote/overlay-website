@@ -19,8 +19,8 @@ const Match1Display: React.FC = () => {
   const confirmedTeams = rawData?.confirmedTeams || [];
 
   // Get teams for Match 1 from confirmedTeams array
-  const team1 = confirmedTeams[0]?.name || "Team 1";
-  const team2 = confirmedTeams[1]?.name || "Team 2";
+  const team1 = confirmedTeams[0];
+  const team2 = confirmedTeams[1];
 
   // Get scores from the correct fields
   const team1Score = semiFinal1?.team1Score || semiFinal1?.teamScores?.[0] || 0;
@@ -28,32 +28,80 @@ const Match1Display: React.FC = () => {
 
   // Get players for Match 1
   const match1Players = data.allPlayers.filter(
-    (player) => player.team === team1 || player.team === team2
+    (player) => player.team === team1?.name || player.team === team2?.name
   );
 
-  const team1Players = match1Players.filter((player) => player.team === team1);
-  const team2Players = match1Players.filter((player) => player.team === team2);
+  const team1Players = match1Players.filter(
+    (player) => player.team === team1?.name
+  );
+  const team2Players = match1Players.filter(
+    (player) => player.team === team2?.name
+  );
 
   return (
     <div className="match1-display">
       <div className="match1-header">
         <h3>Match 1: Semifinal 1</h3>
+        {rawData?.tournamentName && (
+          <p className="tournament-name">{rawData.tournamentName}</p>
+        )}
       </div>
 
       {/* Main Match Score */}
       <div className="main-match-score">
         <div className="team-score left-team">
-          <div className="team-icon">🏆</div>
-          <div className="team-name">{team1}</div>
+          <div className="team-icon">{team1?.icon || "🏆"}</div>
+          <div className="team-name">{team1?.name || "Team 1"}</div>
           <div className="score">{team1Score}</div>
         </div>
         <div className="score-separator">-</div>
         <div className="team-score right-team">
           <div className="score">{team2Score}</div>
-          <div className="team-name">{team2}</div>
-          <div className="team-icon">🛡️</div>
+          <div className="team-name">{team2?.name || "Team 2"}</div>
+          <div className="team-icon">{team2?.icon || "🛡️"}</div>
         </div>
       </div>
+
+      {/* Individual Matches Section */}
+      {semiFinal1 && (
+        <div className="individual-matches-section">
+          <h4>Individual Matches</h4>
+          <div className="matches-grid">
+            {[1, 2, 3, 4, 5].map((matchNum) => {
+              const match =
+                semiFinal1[`match${matchNum}` as keyof typeof semiFinal1];
+              if (
+                !match ||
+                typeof match !== "object" ||
+                !("team1Score" in match)
+              )
+                return null;
+
+              return (
+                <div key={matchNum} className="individual-match-card">
+                  <div className="match-header">
+                    <h5>Match {matchNum}</h5>
+                    {(match as any).winner && (
+                      <span className="winner-badge">
+                        🏆 {(match as any).winner}
+                      </span>
+                    )}
+                  </div>
+                  <div className="match-score">
+                    <span className="team-score">
+                      {(match as any).team1Score || 0}
+                    </span>
+                    <span className="score-separator">-</span>
+                    <span className="team-score">
+                      {(match as any).team2Score || 0}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Match 1: Team Match */}
       <div className="match-card">
@@ -66,60 +114,20 @@ const Match1Display: React.FC = () => {
         </div>
         <div className="team-scores">
           <div className="team-score-card left">
-            <div className="team-icon">🏆</div>
-            <div className="team-name">{team1}</div>
+            <div className="team-icon">{team1?.icon || "🏆"}</div>
+            <div className="team-name">{team1?.name || "Team 1"}</div>
             <div className="score">{team1Score}</div>
-            {semiFinal1?.winner === team1 && (
+            {semiFinal1?.winner === team1?.name && (
               <div className="status-badge completed">Completed</div>
             )}
           </div>
           <div className="team-score-card right">
-            <div className="team-icon">🛡️</div>
-            <div className="team-name">{team2}</div>
+            <div className="team-icon">{team2?.icon || "🛡️"}</div>
+            <div className="team-name">{team2?.name || "Team 2"}</div>
             <div className="score">{team2Score}</div>
-            {semiFinal1?.winner === team2 && (
+            {semiFinal1?.winner === team2?.name && (
               <div className="status-badge completed">Completed</div>
             )}
-          </div>
-        </div>
-      </div>
-
-      {/* Match 2: 1st Doubles */}
-      <div className="match-card">
-        <div className="match-card-header">
-          <h4>Match 2: 1st Doubles</h4>
-        </div>
-        <div className="match-details">
-          <p>
-            Players:{" "}
-            {team1Players
-              .slice(0, 2)
-              .map((p) => p.name)
-              .join(", ")}
-          </p>
-          <p>Race to {rawData?.raceToScore || 5}</p>
-        </div>
-        <div className="team-scores">
-          <div className="team-score-card left">
-            <div className="team-icon">🏆</div>
-            <div className="team-name">
-              {team1Players
-                .slice(0, 2)
-                .map((p) => p.name)
-                .join(", ")}
-            </div>
-            <div className="score">5</div>
-            <div className="status-badge completed">Completed</div>
-          </div>
-          <div className="team-score-card right">
-            <div className="team-icon">🛡️</div>
-            <div className="team-name">
-              {team2Players
-                .slice(0, 2)
-                .map((p) => p.name)
-                .join(", ")}
-            </div>
-            <div className="score">2</div>
           </div>
         </div>
       </div>
@@ -129,7 +137,7 @@ const Match1Display: React.FC = () => {
         <h4>All Players</h4>
         <div className="players-container">
           <div className="team-players left-team">
-            <h5>{team1} Players:</h5>
+            <h5>{team1?.name || "Team 1"} Players:</h5>
             <div className="players-list">
               {team1Players.map((player) => (
                 <div key={player.id} className="player-item">
@@ -142,7 +150,7 @@ const Match1Display: React.FC = () => {
             </div>
           </div>
           <div className="team-players right-team">
-            <h5>{team2} Players:</h5>
+            <h5>{team2?.name || "Team 2"} Players:</h5>
             <div className="players-list">
               {team2Players.map((player) => (
                 <div key={player.id} className="player-item">
