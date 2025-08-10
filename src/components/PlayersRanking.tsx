@@ -1,104 +1,71 @@
 import React from "react";
-import { useData } from "../contexts/DataContext";
+import { useData } from "../hooks/useData";
 import "./PlayersRanking.css";
+
+interface SimplePlayer {
+  id: string;
+  name: string;
+  team: string;
+}
 
 const PlayersRanking: React.FC = () => {
   const { data } = useData();
 
   if (data.isLoading) {
-    return <div className="players-ranking-loading">Loading rankings...</div>;
+    return <div className="players-ranking-container">Loading...</div>;
   }
 
   if (data.error) {
-    return <div className="players-ranking-error">Error: {data.error}</div>;
+    return <div className="players-ranking-container">Error: {data.error}</div>;
   }
 
-  // Get team information for logos
-  const confirmedTeams = data.rawData?.confirmedTeams || [];
-  const getTeamIcon = (teamName: string) => {
-    const team = confirmedTeams.find((t) => t.name === teamName);
-    return team?.icon || "🏆";
-  };
+  if (!data.teams || data.teams.length === 0) {
+    return <div className="players-ranking-container">No teams found.</div>;
+  }
 
-  return (
-    <div className="players-ranking">
-      <h2>Player Rankings</h2>
+  try {
+    const allPlayers: SimplePlayer[] = data.teams.flatMap((team) =>
+      team.players.map((player) => ({
+        id: `${team.id}-${player.id}`,
+        name: player.name,
+        team: team.name,
+      }))
+    );
 
-      {/* Tournament Info */}
-      {data.rawData && (
-        <div className="tournament-info-section">
-          <div className="tournament-details">
-            <h3>{data.rawData.tournamentName || "Owens Cup 2024"}</h3>
-            <p>Organizer: {data.rawData.organizer || "Unknown"}</p>
-            <p>Race to: {data.rawData.raceToScore || 5}</p>
+    return (
+      <div className="players-ranking-container">
+        <h1>Player Roster</h1>
+        <div className="rankings-table">
+          <div className="table-header">
+            <div className="player-name-header">Name</div>
+            <div className="team-header">Team</div>
+            <div className="points-header">Points</div>
           </div>
-        </div>
-      )}
-
-      <div className="rankings-table">
-        <div className="rankings-header">
-          <span className="rank">Rank</span>
-          <span className="player-name">Player</span>
-          <span className="team-name">Team</span>
-          <span className="wins">Wins</span>
-          <span className="losses">Losses</span>
-          <span className="win-rate">Win Rate</span>
-        </div>
-        {data.playerRankings.map((player, index) => (
-          <div key={player.playerId} className="ranking-row">
-            <span className="rank">#{index + 1}</span>
-            <span className="player-name">{player.playerName}</span>
-            <span className="team-name">
-              <span className="team-icon">{getTeamIcon(player.teamName)}</span>
-              {player.teamName}
-            </span>
-            <span className="wins">{player.wins}</span>
-            <span className="losses">{player.losses}</span>
-            <span className="win-rate">
-              {player.winRate > 0
-                ? `${(player.winRate * 100).toFixed(1)}%`
-                : "0%"}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      {/* Team Summary */}
-      {confirmedTeams.length > 0 && (
-        <div className="teams-summary">
-          <h3>Teams Overview</h3>
-          <div className="teams-grid">
-            {confirmedTeams.map((team) => (
-              <div key={team.id} className="team-card">
-                <div className="team-header">
-                  <span className="team-icon">{team.icon || "🏆"}</span>
-                  <h4>{team.name}</h4>
-                </div>
-                <div className="team-details">
-                  <p>
-                    <strong>Captain:</strong> {team.captain}
-                  </p>
-                  <p>
-                    <strong>Manager:</strong> {team.manager}
-                  </p>
-                  <p>
-                    <strong>Players:</strong> {team.players}
-                  </p>
-                </div>
+          <div className="table-body">
+            {allPlayers.map((player) => (
+              <div key={player.id} className="player-row">
+                <div className="player-name">{player.name}</div>
+                <div className="team-name">{player.team}</div>
+                <div className="points">—</div>
               </div>
             ))}
           </div>
         </div>
-      )}
-
-      {data.playerRankings.length === 0 && (
-        <div className="no-rankings">
-          <p>No player rankings available yet.</p>
-          <p>Player statistics will appear here as matches are played.</p>
-        </div>
-      )}
-    </div>
-  );
+        {allPlayers.length === 0 && (
+          <div className="no-players">No players to display.</div>
+        )}
+      </div>
+    );
+  } catch (error) {
+    console.error("Error rendering PlayersRanking:", error);
+    return (
+      <div className="players-ranking-container error">
+        <h2>Error Displaying Roster</h2>
+        <p>There was an issue processing the player data.</p>
+        <pre>{error instanceof Error ? error.message : String(error)}</pre>
+      </div>
+    );
+  }
 };
 
 export default PlayersRanking;

@@ -1,110 +1,53 @@
-/* HomeScreen Component Styles */
-
 .home-screen {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  width: 90vw;
+  max-width: 1600px; /* Add a max-width for very large screens */
+  box-sizing: border-box; /* Ensures padding is included in the width */
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.nav-bar {
+.home-screen h1 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 2rem;
+}
+
+.tabs {
   display: flex;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 15px 0;
-  backdrop-filter: blur(10px);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #ddd;
 }
 
-.nav-button {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
+.tabs button {
+  padding: 1rem 1.5rem;
   border: none;
-  padding: 12px 24px;
-  margin: 0 10px;
-  border-radius: 25px;
-  font-size: 1rem;
-  font-weight: bold;
+  background-color: transparent;
   cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #7f8c8d;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
 }
 
-.nav-button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+.tabs button.active {
+  color: #3498db;
 }
 
-.nav-button.active {
-  background: linear-gradient(45deg, #ffd700, #ffed4e);
-  color: #333;
-  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
-}
-
-.main-content {
-  flex: 1;
-  padding: 20px;
-}
-
-/* Section Placeholders */
-.settings-section,
-.tournaments-section,
-.players-section {
-  background: var(--bg-overlay);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-3xl);
-  box-shadow: var(--shadow-xl);
-  border: 2px solid var(--border-accent);
-  backdrop-filter: blur(10px);
+.tabs button.active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
   width: 100%;
-  max-width: 800px;
-  text-align: center;
-  color: var(--text-primary);
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
+  height: 3px;
+  background-color: #3498db;
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-  .nav-bar {
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px;
-  }
-
-  .nav-button {
-    margin: 5px 0;
-    width: 100%;
-    max-width: 300px;
-  }
-
-  .home-header {
-    padding: var(--spacing-lg);
-  }
-
-  .home-title {
-    font-size: var(--font-size-2xl);
-    margin-bottom: var(--spacing-lg);
-  }
-
-  .home-nav {
-    gap: var(--spacing-sm);
-  }
-
-  .nav-btn {
-    padding: var(--spacing-sm) var(--spacing-lg);
-    font-size: var(--font-size-sm);
-    min-width: 100px;
-  }
-
-  .home-main {
-    padding: var(--spacing-lg);
-  }
-
-  .settings-section,
-  .tournaments-section,
-  .players-section {
-    padding: var(--spacing-xl);
-    font-size: var(--font-size-lg);
-  }
+.tab-content {
+  padding-top: 1rem;
 }

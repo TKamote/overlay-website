@@ -1,82 +1,72 @@
 import React, { useState } from "react";
-import OverlayContainer from "../components/OverlayContainer";
-import TournamentsPage from "./TournamentsPage";
-import DebugPage from "./DebugPage";
-import TournamentHistory from "../components/TournamentHistory";
-import TeamsList from "../components/TeamsList";
-import PlayersRanking from "../components/PlayersRanking";
+import { useData } from "../hooks/useData";
 import "./HomeScreen.css";
+import AllMatchesDisplay from "../components/AllMatchesDisplay";
+import TournamentInfo from "../components/TournamentInfo";
+import PlayersRanking from "../components/PlayersRanking";
+import OverallScoreDisplay from "../components/OverallScoreDisplay";
 
 const HomeScreen: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<
-    "overlay" | "tournaments" | "debug" | "history" | "teams" | "rankings"
-  >("overlay");
+  const { data } = useData();
+  const [activeTab, setActiveTab] = useState("overall");
 
-  const renderPage = () => {
-    switch (currentPage) {
-      case "overlay":
-        return <OverlayContainer />;
-      case "tournaments":
-        return <TournamentsPage />;
-      case "debug":
-        return <DebugPage />;
-      case "history":
-        return <TournamentHistory />;
-      case "teams":
-        return <TeamsList />;
-      case "rankings":
+  if (data.isLoading) {
+    return <div className="loading-container">Loading tournament data...</div>;
+  }
+
+  if (data.error || !data) {
+    return (
+      <div className="error-container">
+        Error: {data.error || "No data available"}
+      </div>
+    );
+  }
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case "overall":
+        return <OverallScoreDisplay tournaments={data.tournaments} />;
+      case "allMatches":
+        return <AllMatchesDisplay />;
+      case "details":
+        return <TournamentInfo />;
+      case "ranking":
         return <PlayersRanking />;
       default:
-        return <OverlayContainer />;
+        return null;
     }
   };
 
   return (
     <div className="home-screen">
-      {/* Navigation Bar */}
-      <nav className="nav-bar">
+      <h1>{data.rawData?.tournamentName || "Tournament Dashboard"}</h1>
+      <div className="tabs">
         <button
-          className={`nav-button ${currentPage === "overlay" ? "active" : ""}`}
-          onClick={() => setCurrentPage("overlay")}
+          className={activeTab === "overall" ? "active" : ""}
+          onClick={() => setActiveTab("overall")}
         >
-          OVERLAY
+          Overall Match
         </button>
         <button
-          className={`nav-button ${
-            currentPage === "tournaments" ? "active" : ""
-          }`}
-          onClick={() => setCurrentPage("tournaments")}
+          className={activeTab === "allMatches" ? "active" : ""}
+          onClick={() => setActiveTab("allMatches")}
         >
-          TOURNAMENTS
+          All Matches
         </button>
         <button
-          className={`nav-button ${currentPage === "debug" ? "active" : ""}`}
-          onClick={() => setCurrentPage("debug")}
+          className={activeTab === "details" ? "active" : ""}
+          onClick={() => setActiveTab("details")}
         >
-          DEBUG
+          Tournament Info
         </button>
         <button
-          className={`nav-button ${currentPage === "teams" ? "active" : ""}`}
-          onClick={() => setCurrentPage("teams")}
+          className={activeTab === "ranking" ? "active" : ""}
+          onClick={() => setActiveTab("ranking")}
         >
-          TEAMS
+          Ranking
         </button>
-        <button
-          className={`nav-button ${currentPage === "rankings" ? "active" : ""}`}
-          onClick={() => setCurrentPage("rankings")}
-        >
-          RANKINGS
-        </button>
-        <button
-          className={`nav-button ${currentPage === "history" ? "active" : ""}`}
-          onClick={() => setCurrentPage("history")}
-        >
-          HISTORY
-        </button>
-      </nav>
-
-      {/* Main Content */}
-      <main className="main-content">{renderPage()}</main>
+      </div>
+      <div className="tab-content">{renderContent()}</div>
     </div>
   );
 };

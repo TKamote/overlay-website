@@ -9,6 +9,20 @@ import {
   getDoc,
   Firestore,
 } from "firebase/firestore";
+// Firebase data interfaces
+interface FirebaseTeamData {
+  id?: string;
+  name: string;
+  captain: string;
+  manager: string;
+  color: string;
+  icon: string;
+  players: string;
+}
+
+interface FirebaseUpdateData {
+  [key: string]: string | number | boolean | undefined;
+}
 
 // OwensCup Firebase configuration
 const firebaseConfig = {
@@ -42,10 +56,7 @@ export const tournamentsCollection = collection(db, "tournaments");
 export const matchesCollection = collection(db, "matches");
 
 // User's tournament data (actual structure)
-export const getUserTournamentData = async (
-  userId: string = import.meta.env.VITE_FIREBASE_USER_ID ||
-    "quGTVYdwKDhiF7TNIsk40brjRg33"
-) => {
+export const getUserTournamentData = async () => {
   try {
     console.log("Fetching tournament data...");
     console.log("Firebase project ID:", firebaseConfig.projectId);
@@ -78,49 +89,55 @@ export const getUserTournamentData = async (
 
       if (data.confirmedTeams) {
         // Extract teams from confirmedTeams array
-        teams = data.confirmedTeams.map((teamData: any, index: number) => ({
-          id: teamData.id || `team-${index}`,
-          name: teamData.name,
-          captain: teamData.captain,
-          manager: teamData.manager,
-          color: teamData.color,
-          icon: teamData.icon,
-          players: teamData.players,
-        }));
+        teams = data.confirmedTeams.map(
+          (teamData: FirebaseTeamData, index: number) => ({
+            id: teamData.id || `team-${index}`,
+            name: teamData.name,
+            captain: teamData.captain,
+            manager: teamData.manager,
+            color: teamData.color,
+            icon: teamData.icon,
+            players: teamData.players,
+          })
+        );
       } else if (data.semiFinal1 && data.semiFinal1.teams) {
         // Extract teams from semiFinal1
-        teams = Object.entries(data.semiFinal1.teams).map(
-          ([key, teamData]: [string, any]) => ({
-            id: teamData.id || key,
-            name: teamData.name,
-            captain: teamData.captain,
-            manager: teamData.manager,
-            color: teamData.color,
-            icon: teamData.icon,
-            players: teamData.players,
-          })
-        );
+        teams = Object.entries(data.semiFinal1.teams).map(([key, teamData]) => {
+          const typedTeamData = teamData as FirebaseTeamData;
+          return {
+            id: typedTeamData.id || key,
+            name: typedTeamData.name,
+            captain: typedTeamData.captain,
+            manager: typedTeamData.manager,
+            color: typedTeamData.color,
+            icon: typedTeamData.icon,
+            players: typedTeamData.players,
+          };
+        });
       } else if (data.final && data.final.teams) {
         // Extract teams from final
-        teams = Object.entries(data.final.teams).map(
-          ([key, teamData]: [string, any]) => ({
-            id: teamData.id || key,
-            name: teamData.name,
-            captain: teamData.captain,
-            manager: teamData.manager,
-            color: teamData.color,
-            icon: teamData.icon,
-            players: teamData.players,
-          })
-        );
+        teams = Object.entries(data.final.teams).map(([key, teamData]) => {
+          const typedTeamData = teamData as FirebaseTeamData;
+          return {
+            id: typedTeamData.id || key,
+            name: typedTeamData.name,
+            captain: typedTeamData.captain,
+            manager: typedTeamData.manager,
+            color: typedTeamData.color,
+            icon: typedTeamData.icon,
+            players: typedTeamData.players,
+          };
+        });
       } else {
         // Fallback: try to extract teams from root level
         teams = Object.entries(data)
           .filter(
-            ([_key, value]) =>
-              typeof value === "object" && value !== null && value.name
+            ([, value]) =>
+              typeof value === "object" &&
+              value !== null &&
+              (value as FirebaseTeamData).name
           )
-          .map(([key, teamData]: [string, any]) => ({
+          .map(([key, teamData]: [string, FirebaseTeamData]) => ({
             id: teamData.id || key,
             name: teamData.name,
             captain: teamData.captain,
@@ -153,7 +170,7 @@ export const getUserTournamentData = async (
 };
 
 // Real-time listeners
-export const subscribeToTeams = (callback: (teams: any[]) => void) => {
+export const subscribeToTeams = (callback: (teams: unknown[]) => void) => {
   return onSnapshot(
     teamsCollection,
     (snapshot) => {
@@ -169,7 +186,7 @@ export const subscribeToTeams = (callback: (teams: any[]) => void) => {
   );
 };
 
-export const subscribeToPlayers = (callback: (players: any[]) => void) => {
+export const subscribeToPlayers = (callback: (players: unknown[]) => void) => {
   return onSnapshot(
     playersCollection,
     (snapshot) => {
@@ -186,7 +203,7 @@ export const subscribeToPlayers = (callback: (players: any[]) => void) => {
 };
 
 export const subscribeToTournaments = (
-  callback: (tournaments: any[]) => void
+  callback: (tournaments: unknown[]) => void
 ) => {
   return onSnapshot(
     tournamentsCollection,
@@ -203,7 +220,7 @@ export const subscribeToTournaments = (
   );
 };
 
-export const subscribeToMatches = (callback: (matches: any[]) => void) => {
+export const subscribeToMatches = (callback: (matches: unknown[]) => void) => {
   return onSnapshot(
     matchesCollection,
     (snapshot) => {
@@ -220,12 +237,18 @@ export const subscribeToMatches = (callback: (matches: any[]) => void) => {
 };
 
 // Update functions
-export const updateMatchScore = async (matchId: string, updates: any) => {
+export const updateMatchScore = async (
+  matchId: string,
+  updates: FirebaseUpdateData
+) => {
   const matchRef = doc(db, "matches", matchId);
   await updateDoc(matchRef, updates);
 };
 
-export const updateTeamScore = async (teamId: string, updates: any) => {
+export const updateTeamScore = async (
+  teamId: string,
+  updates: FirebaseUpdateData
+) => {
   const teamRef = doc(db, "teams", teamId);
   await updateDoc(teamRef, updates);
 };

@@ -1,30 +1,29 @@
-// Firebase Configuration
-export const FIREBASE_CONFIG = {
-  // User ID for tournament data - can be changed via environment variable
-  USER_ID:
-    import.meta.env.VITE_FIREBASE_USER_ID || "quGTVYdwKDhiF7TNIsk40brjRg33",
+import { initializeApp } from "firebase/app";
+import { getFirestore, Firestore } from "firebase/firestore";
 
-  // Firebase paths
-  PATHS: {
-    TOURNAMENT_DATA: (userId: string) => `users/${userId}/tournament/current`,
-  },
-
-  // Collection names
-  COLLECTIONS: {
-    USERS: "users",
-    TOURNAMENT: "tournament",
-    TEAMS: "teams",
-    PLAYERS: "players",
-    TOURNAMENTS: "tournaments",
-    MATCHES: "matches",
-  },
+// OwensCup Firebase configuration
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY", // Replace with your actual API key
+  authDomain: "owenscup.firebaseapp.com",
+  projectId: "owenscup",
+  storageBucket: "owenscup.firebasestorage.app",
+  messagingSenderId: "719761938656",
+  appId: "1:719761GTVYdwKDhiF7TNIsk40brjRg33:android:af1796bfe8a9848d0a9885",
+  measurementId: "G-E11GSM385Z",
 };
 
-// Helper function to get tournament document reference
-export const getTournamentDocRef = (userId?: string) => {
-  const finalUserId = userId || FIREBASE_CONFIG.USER_ID;
-  return {
-    path: FIREBASE_CONFIG.PATHS.TOURNAMENT_DATA(finalUserId),
-    userId: finalUserId,
-  };
-};
+// Initialize Firebase with error handling
+let app;
+let db: Firestore;
+
+try {
+  console.log("Initializing Firebase...");
+  app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+  console.log("Firebase initialized successfully");
+} catch (error) {
+  console.error("Firebase initialization error:", error);
+  throw error;
+}
+
+export default db;
