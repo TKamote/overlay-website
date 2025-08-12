@@ -8,6 +8,7 @@ import type {
   Tournament,
   FirebaseTournamentStage,
 } from "../types/tournament";
+import { getMatchTitle, getPlayersForMatch } from "../utils/tournamentUtils";
 
 export const useTournamentData = (userId: string) => {
   const [data, setData] = useState<CentralizedData>({
@@ -33,23 +34,43 @@ export const useTournamentData = (userId: string) => {
           return null;
         }
 
-        const matches = stageData.matches || [];
+        const matches = (stageData.matches || []).map((m) => {
+          const team1 = teams.find((t) => t.id === m.team1Id);
+          const team2 = teams.find((t) => t.id === m.team2Id);
+
+          return {
+            ...m,
+            id: m.id,
+            title: getMatchTitle(m),
+            team1Id: m.team1Id,
+            team2Id: m.team2Id,
+            team1Players: team1 ? getPlayersForMatch(m, team1) : [],
+            team2Players: team2 ? getPlayersForMatch(m, team2) : [],
+            // team1Score and team2Score are intentionally omitted here
+            // as they will be derived from the overall score calculation
+            isCompleted: m.isCompleted,
+            winnerId: m.winnerId,
+          };
+        });
+
         const team1Id = matches.length > 0 ? matches[0].team1Id : "";
         const team2Id = matches.length > 0 ? matches[0].team2Id : "";
 
         const team1 = teams.find((t) => t.id === team1Id);
         const team2 = teams.find((t) => t.id === team2Id);
 
-        const team1Score = matches.reduce(
-          (acc, m) =>
-            acc + (m.team1Id === team1Id ? m.team1Score : m.team2Score),
-          0
-        );
-        const team2Score = matches.reduce(
-          (acc, m) =>
-            acc + (m.team1Id === team2Id ? m.team1Score : m.team2Score),
-          0
-        );
+        const team1MatchWins = matches.reduce((acc, m) => {
+          if (m.isCompleted && m.winnerId === team1Id) {
+            return acc + 1;
+          }
+          return acc;
+        }, 0);
+        const team2MatchWins = matches.reduce((acc, m) => {
+          if (m.isCompleted && m.winnerId === team2Id) {
+            return acc + 1;
+          }
+          return acc;
+        }, 0);
 
         return {
           id: stageId,
@@ -60,8 +81,8 @@ export const useTournamentData = (userId: string) => {
           overallScore: {
             team1Id,
             team2Id,
-            team1Score,
-            team2Score,
+            team1Score: team1MatchWins,
+            team2Score: team2MatchWins,
             team1Name: team1?.name || "N/A",
             team2Name: team2?.name || "N/A",
           },

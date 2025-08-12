@@ -5,6 +5,7 @@ import AllMatchesDisplay from "../components/AllMatchesDisplay";
 import TournamentInfo from "../components/TournamentInfo";
 import PlayersRanking from "../components/PlayersRanking";
 import OverallScoreDisplay from "../components/OverallScoreDisplay";
+import TournamentHistory from "../components/TournamentHistory";
 
 const HomeScreen: React.FC = () => {
   const { data } = useData();
@@ -32,13 +33,15 @@ const HomeScreen: React.FC = () => {
         return <TournamentInfo />;
       case "ranking":
         return <PlayersRanking />;
+      case "history":
+        return <TournamentHistory />;
       default:
         return null;
     }
   };
 
   return (
-    <div className="home-screen">
+    <div className="home-screen glass-card">
       <h1>{data.rawData?.tournamentName || "Tournament Dashboard"}</h1>
       <div className="tabs">
         <button
@@ -64,6 +67,12 @@ const HomeScreen: React.FC = () => {
           onClick={() => setActiveTab("ranking")}
         >
           Ranking
+        </button>
+        <button
+          className={activeTab === "history" ? "active" : ""}
+          onClick={() => setActiveTab("history")}
+        >
+          Tournament History
         </button>
       </div>
       <div className="tab-content">{renderContent()}</div>

@@ -1,89 +1,357 @@
 .all-matches {
-  padding: 1rem;
+  padding: 0.1rem;
 }
 
 .tournaments-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2rem;
+  gap: var(--spacing-5);
 }
 
 /* For desktop screens */
 @media (min-width: 992px) {
   .tournaments-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .match-section[data-tournament-id="final"] {
+    grid-column: 1 / -1; /* Span full width */
   }
 }
 
-.match-section {
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+.match-section h2 {
+  color: var(--text-color);
+  border-bottom: 2px solid var(--primary-color);
+  padding-bottom: var(--spacing-2);
+  margin-bottom: var(--spacing-4);
 }
 
-.match-section h2 {
-  color: #2c3e50;
-  border-bottom: 2px solid #3498db;
-  padding-bottom: 0.5rem;
-  margin-bottom: 1.5rem;
+.overall-score-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: var(--spacing-3);
+  margin-bottom: var(--spacing-4);
+  border-radius: var(--radius-md);
+  min-height: 130px;
+}
+
+.overall-score-summary .team-name {
+  color: var(--text-color);
+}
+
+.overall-score-summary .team-logo-wrapper {
+  justify-self: center;
+}
+
+.overall-score-summary .team-name-wrapper {
+  justify-self: start;
+}
+
+.overall-score-summary .overall-scores {
+  justify-self: center;
+}
+
+.overall-score-summary .team {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+}
+
+.overall-score-summary .team-name {
+  color: var(--text-color);
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+}
+
+.match-section:not([data-tournament-id="final"])
+  .overall-score-summary
+  .team-icon.icon-container {
+  width: 48px;
+  height: 48px;
+}
+
+.match-section:not([data-tournament-id="final"])
+  .overall-score-summary
+  .team-icon.icon-container
+  svg {
+  width: 28px;
+  height: 28px;
+}
+
+.overall-scores {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+}
+
+.overall-scores .score {
+  background-color: var(--accent-color);
+  color: var(--text-color-light);
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--radius-sm);
+  font-size: 2.2rem;
+}
+
+.match-section[data-tournament-id="final"] .overall-scores .score {
+  font-size: 2.5rem;
+  padding: var(--spacing-3) var(--spacing-4);
+}
+
+.overall-scores .vs {
+  color: var(--text-color);
+  opacity: 0.7;
+  font-size: var(--font-size-md);
+  padding: var(--spacing-1) var(--spacing-2);
+  margin: 0 20px;
+}
+
+.undetermined-final {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-5) var(--spacing-3);
+  margin-bottom: var(--spacing-4);
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  font-weight: bold;
+  color: var(--text-color);
+  text-align: center;
+}
+
+.match-summary.undetermined {
+  background-color: rgba(255, 255, 255, 0.05);
+  justify-content: center;
+}
+
+.match-summary.undetermined .team-name {
+  color: var(--text-color);
+  opacity: 0.7;
+  font-style: italic;
+}
+
+.match-title {
+  text-align: center;
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  color: var(--text-color);
+  margin-bottom: var(--spacing-3);
+  padding-bottom: var(--spacing-2);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.player-list {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: center; /* Center players vertically */
+  align-items: center;
+}
+
+.undetermined-final .vs {
+  margin: 0 var(--spacing-3);
+  color: var(--text-color);
+  opacity: 0.7;
+  font-size: var(--font-size-lg);
 }
 
 .match-summary {
-  background-color: #ffffff;
-  border: 1px solid #e7e7e7;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-3);
+  margin-bottom: var(--spacing-3);
+  box-shadow: var(--shadow-sm);
+  min-height: 130px;
 }
 
 .team-vs-team {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 1.2rem;
-  font-weight: 500;
+  gap: var(--spacing-3);
 }
 
 .team {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  min-width: 0; /* Prevents flex items from overflowing their container */
+  gap: var(--spacing-2);
+  flex: 1; /* Allow team sections to grow and shrink */
 }
 
-.team-icon {
-  font-size: 1.5rem;
+.team-one {
+  justify-content: flex-start;
+}
+
+.team-two {
+  justify-content: flex-end;
+}
+
+.team-icon.icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+.team-icon.icon-container svg {
+  width: 22px;
+  height: 22px;
 }
 
 .team-name {
-  color: #34495e;
+  color: var(--text-color);
   word-break: break-word; /* Allows long words to be broken and wrap to the next line */
 }
 
-.score {
-  background-color: #3498db;
-  color: #ffffff;
-  padding: 0.25rem 0.75rem;
-  border-radius: 4px;
+.player-name {
+  word-break: break-word;
+}
+
+.match-scores {
+  display: flex;
+  align-items: center;
+  gap: 20px;
   font-weight: bold;
 }
 
-.vs {
-  color: #95a5a6;
+.match-scores .score {
+  background-color: var(--primary-color);
+  color: var(--text-color-light);
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--radius-sm);
   font-weight: bold;
+  font-size: var(--font-size-xxl);
+}
+
+.match-scores .vs {
+  color: var(--text-color);
+  opacity: 0.7;
+  font-weight: bold;
+  font-size: var(--font-size-lg);
+  padding: var(--spacing-1) var(--spacing-2);
+  margin: 0 20px;
 }
 
 .winner {
   text-align: center;
-  margin-top: 1rem;
+  margin-top: var(--spacing-3);
   font-weight: bold;
-  color: #27ae60;
+  color: var(--success-color);
 }
 
 .no-matches {
   text-align: center;
-  padding: 2rem;
-  color: #7f8c8d;
+  padding: var(--spacing-5);
+  color: var(--text-color);
+  opacity: 0.7;
+}
+
+/*
+  ==============================================
+  FINAL MATCH STYLING 
+  ==============================================
+*/
+
+.match-section[data-tournament-id="final"] {
+  grid-column: 1 / -1; /* Span full width */
+}
+
+.match-section[data-tournament-id="final"] h2 {
+  font-size: var(--font-size-xxl);
+}
+
+.match-section[data-tournament-id="final"] .overall-score-summary {
+  padding: var(--spacing-5);
+  align-items: center;
+}
+
+.match-section[data-tournament-id="final"] .overall-score-summary .team-name,
+.match-section[data-tournament-id="final"] .player-name {
+  font-size: var(--font-size-xl);
+}
+
+.match-section[data-tournament-id="final"]
+  .overall-score-summary
+  .match-scores {
+  font-size: var(--font-size-xxl);
+}
+
+.match-section[data-tournament-id="final"] .overall-score-summary .score {
+  padding: var(--spacing-2) var(--spacing-3);
+}
+
+.match-section[data-tournament-id="final"] .overall-score-summary .vs {
+  font-size: var(--font-size-xl);
+}
+
+.match-section[data-tournament-id="final"] .team-icon.icon-container {
+  width: 54px;
+  height: 54px;
+}
+
+.match-section[data-tournament-id="final"] .team-icon.icon-container svg {
+  width: 33px;
+  height: 33px;
+}
+
+.overall-score-summary .team-icon.icon-container,
+.match-summary .team-icon.icon-container {
+  width: 48px;
+  height: 48px;
+}
+
+.overall-score-summary .team-icon.icon-container svg,
+.match-summary .team-icon.icon-container svg {
+  width: 28px;
+  height: 28px;
+}
+
+/* Reinstated styles for the shared TeamIcon component */
+.team-icon.icon-container {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+.team-icon.icon-container svg {
+  width: 26px;
+  height: 26px;
+}
+
+/* Larger icons for the overall summary section */
+.overall-score-summary .team-icon.icon-container {
+  width: 60px;
+  height: 60px;
+}
+
+.overall-score-summary .team-icon.icon-container svg {
+  width: 36px;
+  height: 36px;
+}
+
+/* Extra-large icons for the final match summary section */
+.match-section[data-tournament-id="final"]
+  .overall-score-summary
+  .team-icon.icon-container {
+  width: 80px;
+  height: 80px;
+}
+
+.match-section[data-tournament-id="final"]
+  .overall-score-summary
+  .team-icon.icon-container
+  svg {
+  width: 48px;
+  height: 48px;
 }

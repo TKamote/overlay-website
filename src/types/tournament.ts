@@ -10,8 +10,11 @@ export interface Player {
 
 export interface Match {
   id: string;
+  title?: string;
   team1Id: string;
   team2Id: string;
+  team1Players?: Player[];
+  team2Players?: Player[];
   team1Score: number;
   team2Score: number;
   isCompleted: boolean;
@@ -21,8 +24,13 @@ export interface Match {
 // This represents the raw match object from Firebase
 export interface FirebaseMatch {
   id: string;
+  title?: string; // This will be generated, not from Firebase
+  matchNumber?: number;
+  matchType?: string;
   team1Id: string;
   team2Id: string;
+  team1Players?: Player[]; // This will be generated
+  team2Players?: Player[]; // This will be generated
   team1Score: number;
   team2Score: number;
   isCompleted: boolean;

@@ -1,6 +1,21 @@
 import React from "react";
 import { useData } from "../contexts/DataContext";
+import {
+  FaTrophy,
+  FaShieldAlt,
+  FaStar,
+  FaCrown,
+  FaQuestionCircle,
+} from "react-icons/fa";
 import "./TournamentInfo.css";
+
+const iconMap: { [key: string]: React.ElementType } = {
+  trophy: FaTrophy,
+  shield: FaShieldAlt,
+  star: FaStar,
+  crown: FaCrown,
+  default: FaQuestionCircle,
+};
 
 interface TournamentInfoProps {
   displaySize?: "overlay" | "full-screen";
@@ -19,42 +34,73 @@ const TournamentInfo: React.FC<TournamentInfoProps> = ({
     return <div className="tournament-info">Error: {data.error}</div>;
   }
 
-  if (!data.tournaments || data.tournaments.length === 0) {
-    return <div className="tournament-info">No tournament data</div>;
+  const teams = data.teams || [];
+  if (teams.length === 0) {
+    return <div className="tournament-info">No teams found</div>;
   }
 
-  const activeTournament = data.tournaments.find((t) => t.status === "active");
-
-  if (!activeTournament) {
-    return <div className="tournament-info">No active tournament</div>;
-  }
+  const { tournamentName, organizer, lastUpdated } = data.rawData || {};
 
   return (
-    <div className="tournament-info" data-display-size={displaySize}>
-      <h1 className="main-tournament-name">
-        {activeTournament.name || "OWENS CUP"}
-      </h1>
-      <div className="live-badge">
-        <span className="status-badge status-active">LIVE</span>
-      </div>
-
-      <div className="teams-section">
-        <h2>Teams</h2>
-        {activeTournament.teams?.map((team) => (
-          <div
-            key={team.id}
-            className="team-card"
-            style={{ borderColor: team.color }}
-          >
-            <h3>{team.name}</h3>
-            <p>Captain: {team.captain}</p>
-            <p>Manager: {team.manager}</p>
-            <div className="players">
-              <h4>Players:</h4>
-              <span className="player">{team.players.join(", ")}</span>
+    <div className="tournament-info-grid" data-display-size={displaySize}>
+      <div className="team-column">
+        {teams.map((team) => (
+          <div key={team.id} className="team-card-container">
+            <div className="team-header">
+              <div
+                className="ti-icon-container"
+                style={{ backgroundColor: team.color }}
+              >
+                {React.createElement(
+                  iconMap[team.icon?.toLowerCase() || "default"]
+                )}
+              </div>
+              <div className="team-name-id">
+                <h3 className="team-name">{team.name}</h3>
+                <p className="team-id">Team {team.id}</p>
+              </div>
+            </div>
+            <div className="team-details">
+              <div className="detail-item">
+                <span className="detail-label">Manager:</span>
+                <span className="detail-value">{team.manager}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Captain:</span>
+                <span className="detail-value">{team.captain}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Players:</span>
+                <span className="detail-value">
+                  {team.players.map((p) => p.name).join(", ")}
+                </span>
+              </div>
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="center-column">
+        {tournamentName && (
+          <div className="tournament-meta">
+            <h1>{tournamentName}</h1>
+            {organizer && <p>Organized by: {organizer}</p>}
+            {lastUpdated && (
+              <p>Last Updated: {new Date(lastUpdated).toLocaleDateString()}</p>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="right-column">
+        <div className="placeholder-card">
+          <h3>Past Champion</h3>
+          <p>TBD</p>
+        </div>
+        <div className="placeholder-card">
+          <h3>Runner Ups</h3>
+          <p>TBD</p>
+        </div>
       </div>
     </div>
   );

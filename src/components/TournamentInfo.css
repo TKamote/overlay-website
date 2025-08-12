@@ -1,51 +1,133 @@
-.tournament-info {
-  background-color: #ffffff;
-  border-radius: 8px;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+.tournament-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2rem;
+  padding: 1rem;
+}
+
+.team-column,
+.right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.center-column {
   text-align: center;
 }
 
-.main-tournament-name {
-  color: #2c3e50;
-  margin-bottom: 0.5rem;
+.tournament-meta {
+  height: fit-content;
 }
 
-.live-badge {
-  display: inline-block;
-  background-color: #e74c3c;
-  color: #ffffff;
-  padding: 0.25rem 0.75rem;
+.tournament-meta h1 {
+  margin: 0 0 var(--spacing-3) 0;
+  color: var(--text-color);
+  font-size: var(--font-size-xl);
+}
+
+.tournament-meta p {
+  margin: var(--spacing-2) 0;
+  color: var(--text-color);
+  font-size: var(--font-size-md);
+}
+
+.placeholder-card h3 {
+  margin: 0 0 var(--spacing-3) 0;
+  color: var(--text-color);
+}
+
+.placeholder-card p {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  color: var(--text-color);
+}
+
+/* All Team Card styles are now in this file */
+.team-card-container {
+  background-color: rgba(255, 255, 255, 0.8);
   border-radius: 12px;
-  font-size: 0.8rem;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.team-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.team-card-icon.icon-container {
+  width: 50px;
+  height: 50px;
+  padding: 10px;
+  border-radius: 50%;
+}
+
+.team-card-icon.icon-container svg {
+  width: 30px;
+  height: 30px;
+}
+
+.team-name-id {
+  display: flex;
+  flex-direction: column;
+}
+
+.team-name-id .team-name {
+  font-size: 28px;
   font-weight: bold;
-  text-transform: uppercase;
-  margin-bottom: 2rem;
-}
-
-.teams-section h2 {
   color: #2c3e50;
-  border-bottom: 2px solid #3498db;
-  padding-bottom: 0.5rem;
-  margin-bottom: 1.5rem;
+  margin: 0;
 }
 
-.teams-section .team-card {
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
-  border-left-width: 5px;
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-  text-align: left;
+.team-name-id .team-id {
+  font-size: 16px;
+  color: #7f8c8d;
+  margin: 0;
 }
 
-.teams-section .team-card h3 {
-  margin-top: 0;
+.team-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detail-item {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  align-items: start;
+  gap: 8px;
+  font-size: 20px;
+}
+
+.detail-label {
+  font-weight: bold;
+  color: #34495e;
+}
+
+.detail-value {
   color: #495057;
+  word-break: break-word;
 }
 
-.players {
-  margin-top: 1rem;
+/* Local Icon Styles for Tournament Info Tab ONLY */
+.ti-icon-container {
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%; /* Make it a circle */
+  flex-shrink: 0;
+}
+
+.ti-icon-container svg {
+  width: 30px;
+  height: 30px;
+  color: white;
 }

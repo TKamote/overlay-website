@@ -1,35 +1,114 @@
-.overall-score-display {
+.overall-score-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
+  gap: var(--spacing-5);
 }
 
-.tournament-summary-card {
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
+.stage-card {
+  padding: var(--spacing-5);
 }
 
-.tournament-summary-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.stage-title {
+  text-align: center;
+  font-size: calc(var(--font-size-xl) + 4px);
+  color: var(--text-color);
+  margin: 0 0 var(--spacing-4) 0;
 }
 
-.tournament-summary-card h3 {
-  margin-top: 0;
-  color: #495057;
-  border-bottom: 2px solid #3498db;
-  padding-bottom: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.overall-score-details p {
-  margin: 0.5rem 0;
-  font-size: 1.1rem;
-  color: #6c757d;
+.matchup-display {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+}
+
+.team-info {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  justify-content: space-between;
+}
+
+.team-info.left {
+  padding-left: 40px;
+}
+
+.team-info.right {
+  justify-content: space-between;
+  padding-right: 40px;
+}
+
+.team-info .team-name {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+.scores-center {
+  display: flex;
+  align-items: center;
+}
+
+.scores-center .score {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--text-color);
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+.vs-circle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: var(--text-color-light);
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  margin: 0 20px;
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+
+/* Enhancements for the Final match */
+.final-stage .stage-title {
+  font-size: 2.2rem;
+}
+
+.final-stage .team-info .team-name {
+  font-size: 2rem;
+}
+
+.final-stage .scores-center .score {
+  font-size: 3rem;
+}
+
+.final-stage .vs-circle {
+  font-size: 1.5rem; /* Slightly larger VS */
+  width: 60px;
+  height: 60px;
+}
+
+.team-info .icon-container {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+}
+
+.team-info .icon-container svg {
+  width: 33px;
+  height: 33px;
+}
+
+.final-stage .icon-container {
+  width: 70px;
+  height: 70px;
+}
+
+.final-stage .icon-container svg {
+  width: 42px;
+  height: 42px;
 }

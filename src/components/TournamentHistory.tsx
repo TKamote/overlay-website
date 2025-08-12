@@ -1,69 +1,57 @@
 import React from "react";
-import { useData } from "../contexts/DataContext";
+import { useData } from "../hooks/useData";
 import type { Tournament } from "../types/tournament";
 
-interface TournamentHistoryProps {
-  displaySize?: "full-screen" | "overlay";
-}
-
-const TournamentHistory: React.FC<TournamentHistoryProps> = ({
-  displaySize = "full-screen",
-}) => {
+const TournamentHistory: React.FC = () => {
   const { data } = useData();
 
   if (data.isLoading) {
-    return (
-      <div className="loading">
-        <div className="loading-spinner"></div>
-        <p>Loading tournament history...</p>
-      </div>
-    );
+    return <div>Loading history...</div>;
   }
 
+  if (data.error) {
+    return <div>Error loading history: {data.error}</div>;
+  }
+
+  // Filter for tournaments where the final stage is marked as "finished"
   const completedTournaments = data.tournaments.filter(
-    (t) => t.status === "finished"
+    (t: Tournament) => t.id === "final" && t.status === "finished"
   );
 
+  if (completedTournaments.length === 0) {
+    return <div>No completed tournaments yet.</div>;
+  }
+
   return (
-    <div className="tournament-history" data-display-size={displaySize}>
-      <div className="history-header">
-        <h1>TOURNAMENT HISTORY</h1>
-      </div>
+    <div className="tournament-history">
+      <h2>Tournament History</h2>
+      {completedTournaments.map((tournament) => {
+        // Determine the winner from the final match's overall score
+        const { overallScore } = tournament;
+        let winnerId: string | undefined;
+        if (overallScore) {
+          if (overallScore.team1Score > overallScore.team2Score) {
+            winnerId = overallScore.team1Id;
+          } else if (overallScore.team2Score > overallScore.team1Score) {
+            winnerId = overallScore.team2Id;
+          }
+        }
+        const winner = data.teams.find((t) => t.id === winnerId);
+        const tournamentName = tournament.name.replace(/ - Final$/, "");
 
-      <div className="history-list">
-        {completedTournaments.map((tournament: Tournament) => {
-          const winner = tournament.teams.find(
-            (t) =>
-              t.id === tournament.matches.find((m) => m.isCompleted)?.winnerId
-          );
-          return (
-            <div key={tournament.id} className={`history-card completed`}>
-              <div className="tournament-info">
-                <h3>{tournament.name}</h3>
-                <div className="participants">
-                  <span>
-                    Participants:{" "}
-                    {tournament.teams.map((t) => t.name).join(", ")}
-                  </span>
-                </div>
-              </div>
-
-              <div className="tournament-result">
-                <div className="winner-section">
-                  <span className="winner-label">🏆 Winner</span>
-                  <span className="winner-name">{winner?.name || "N/A"}</span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {completedTournaments.length === 0 && (
-        <div className="empty-history">
-          <p>No completed tournaments yet.</p>
-        </div>
-      )}
+        return (
+          <div key={tournament.id} className="history-item">
+            <h3>{tournamentName}</h3>
+            <p>
+              <strong>Winner:</strong> {winner ? winner.name : "N/A"}
+            </p>
+            <p>
+              <strong>Participants:</strong>{" "}
+              {data.teams.map((t) => t.name).join(", ")}
+            </p>
+          </div>
+        );
+      })}
     </div>
   );
 };
