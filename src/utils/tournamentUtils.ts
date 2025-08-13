@@ -21,7 +21,7 @@ export const getPlayersForMatch = (
     // M2: 1st Doubles
     case 1:
       // P2 and P3
-      return players.filter((p, index) => index === 1 || index === 2);
+      return players.filter((_, index) => index === 1 || index === 2);
 
     // M3: 1st Singles
     case 2:
@@ -31,12 +31,12 @@ export const getPlayersForMatch = (
     // M4: 2nd Doubles
     case 3:
       // P4 and P5
-      return players.filter((p, index) => index === 3 || index === 4);
+      return players.filter((_, index) => index === 3 || index === 4);
 
     // M5: 2nd Singles
     case 4:
       // P2
-      return players.filter((p, index) => index === 1);
+      return players.filter((_, index) => index === 1);
 
     // M6: 2nd Team Match
     case 5:
@@ -45,7 +45,7 @@ export const getPlayersForMatch = (
     // M7: 3rd Doubles
     case 6:
       // P1 and P3
-      return players.filter((p, index) => index === 0 || index === 2);
+      return players.filter((_, index) => index === 0 || index === 2);
 
     // M8 & M9: Captain's Pick (provisional)
     case 7:

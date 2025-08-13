@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useData } from "../hooks/useData";
 import "./HomeScreen.css";
 import AllMatchesDisplay from "../components/AllMatchesDisplay";
@@ -11,19 +11,25 @@ const HomeScreen: React.FC = () => {
   const { data } = useData();
   const [activeTab, setActiveTab] = useState("overall");
 
+  useEffect(() => {
+    // When the live tournament disappears, reset the view to the history tab.
+    if (data.error) {
+      setActiveTab("history");
+    }
+  }, [data.error]);
+
   if (data.isLoading) {
     return <div className="loading-container">Loading tournament data...</div>;
   }
 
-  if (data.error || !data) {
-    return (
-      <div className="error-container">
-        Error: {data.error || "No data available"}
-      </div>
-    );
-  }
+  const hasLiveTournament = !data.error;
+  const displayedTab = hasLiveTournament ? activeTab : "history";
 
   const renderContent = () => {
+    if (!hasLiveTournament) {
+      return <TournamentHistory />;
+    }
+
     switch (activeTab) {
       case "overall":
         return <OverallScoreDisplay tournaments={data.tournaments} />;
@@ -36,7 +42,9 @@ const HomeScreen: React.FC = () => {
       case "history":
         return <TournamentHistory />;
       default:
-        return null;
+        // This case should ideally not be reached if there's a live tournament,
+        // but as a fallback, show the history.
+        return <TournamentHistory />;
     }
   };
 
@@ -45,37 +53,47 @@ const HomeScreen: React.FC = () => {
       <h1>{data.rawData?.tournamentName || "Tournament Dashboard"}</h1>
       <div className="tabs">
         <button
-          className={activeTab === "overall" ? "active" : ""}
+          className={displayedTab === "overall" ? "active" : ""}
           onClick={() => setActiveTab("overall")}
+          disabled={!hasLiveTournament}
         >
           Overall Match
         </button>
         <button
-          className={activeTab === "allMatches" ? "active" : ""}
+          className={displayedTab === "allMatches" ? "active" : ""}
           onClick={() => setActiveTab("allMatches")}
+          disabled={!hasLiveTournament}
         >
           All Matches
         </button>
         <button
-          className={activeTab === "details" ? "active" : ""}
+          className={displayedTab === "details" ? "active" : ""}
           onClick={() => setActiveTab("details")}
+          disabled={!hasLiveTournament}
         >
           Tournament Info
         </button>
         <button
-          className={activeTab === "ranking" ? "active" : ""}
+          className={displayedTab === "ranking" ? "active" : ""}
           onClick={() => setActiveTab("ranking")}
+          disabled={!hasLiveTournament}
         >
           Ranking
         </button>
         <button
-          className={activeTab === "history" ? "active" : ""}
+          className={displayedTab === "history" ? "active" : ""}
           onClick={() => setActiveTab("history")}
         >
           Tournament History
         </button>
       </div>
-      <div className="tab-content">{renderContent()}</div>
+      <div className="tab-content">
+        {data.isLoading ? (
+          <div className="loading-container">Loading tournament data...</div>
+        ) : (
+          renderContent()
+        )}
+      </div>
     </div>
   );
 };

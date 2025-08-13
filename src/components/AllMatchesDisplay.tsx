@@ -1,11 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import type { Tournament, Match } from "../types/tournament";
 import "./AllMatchesDisplay.css";
 import { useData } from "../contexts/DataContext";
 import { TeamIcon } from "./TeamIcon";
+import { archiveCurrentTournament } from "../services/tournamentService";
 
 const AllMatchesDisplay: React.FC = () => {
-  const { data } = useData();
+  const { data, userId } = useData();
+  const [isArchiving, setIsArchiving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleArchive = async () => {
+    if (!userId) {
+      setError("User ID is not available.");
+      return;
+    }
+    setIsArchiving(true);
+    setError(null);
+    try {
+      await archiveCurrentTournament(userId);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "An unknown error occurred."
+      );
+    } finally {
+      setIsArchiving(false);
+    }
+  };
 
   if (!data || !data.tournaments.length) {
     return (
@@ -18,8 +39,30 @@ const AllMatchesDisplay: React.FC = () => {
     );
   }
 
+  const finalTournament = data.tournaments.find((t) => t.id === "final");
+
+  const isTournamentComplete =
+    finalTournament?.overallScore &&
+    finalTournament.overallScore.team1Score !==
+      finalTournament.overallScore.team2Score &&
+    (finalTournament.overallScore.team1Score === 5 ||
+      finalTournament.overallScore.team2Score === 5);
+
   return (
     <div className="all-matches">
+      {isTournamentComplete && (
+        <div className="archive-section">
+          <button
+            onClick={handleArchive}
+            disabled={isArchiving}
+            className="archive-button"
+          >
+            {isArchiving ? "Archiving..." : "Complete & Archive Tournament"}
+          </button>
+          {error && <p className="archive-error">{error}</p>}
+        </div>
+      )}
+
       <div className="tournaments-grid">
         {data.tournaments.map((tournament: Tournament) => {
           const team1 = data.teams.find(
@@ -50,6 +93,7 @@ const AllMatchesDisplay: React.FC = () => {
               data-tournament-id={tournament.id}
             >
               <h2>{tournament.name.replace(/.* - /, "")}</h2>
+
               {isFinalAndUndetermined ? (
                 <div className="undetermined-final">
                   <span>Winner of Semifinal A</span>

@@ -355,3 +355,36 @@
   width: 48px;
   height: 48px;
 }
+
+.archive-section {
+  text-align: center;
+  padding: var(--spacing-4) 0;
+  border-top: 1px solid var(--border-color);
+  margin-top: var(--spacing-4);
+}
+
+.archive-button {
+  background-color: var(--primary-color);
+  color: var(--text-color-light);
+  padding: var(--spacing-3) var(--spacing-5);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.archive-button:hover {
+  background-color: var(--accent-color);
+}
+
+.archive-button:disabled {
+  background-color: var(--disabled-color);
+  cursor: not-allowed;
+}
+
+.archive-error {
+  color: var(--danger-color);
+  margin-top: var(--spacing-2);
+}

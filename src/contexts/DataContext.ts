@@ -2,6 +2,7 @@ import { createContext, useContext } from "react";
 import type { CentralizedData, Tournament, Team } from "../types/tournament";
 
 export interface DataContextType {
+  userId: string;
   data: CentralizedData;
   getActiveTournament: () => Tournament | undefined;
   getTeamById: (id: string) => Team | undefined;

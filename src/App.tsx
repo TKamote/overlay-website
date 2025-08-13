@@ -1,21 +1,6 @@
 import { DataProvider } from "./contexts/DataContext.tsx";
-import { useData } from "./hooks/useData.ts";
 import "./global.css";
 import HomeScreen from "./pages/HomeScreen";
-
-function AppContent() {
-  const { data } = useData();
-
-  if (data.isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (data.error) {
-    return <div>Error: {data.error}</div>;
-  }
-
-  return <HomeScreen />;
-}
 
 function App() {
   return (
@@ -27,7 +12,7 @@ function App() {
           margin: "0 auto",
         }}
       >
-        <AppContent />
+        <HomeScreen />
       </div>
     </DataProvider>
   );

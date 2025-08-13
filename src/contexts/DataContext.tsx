@@ -28,11 +28,12 @@ export const DataProvider: React.FC<DataProviderProps> = ({
 
   const contextValue = useMemo(
     () => ({
+      userId, // Expose the userId
       data,
       getActiveTournament,
       getTeamById,
     }),
-    [data, getActiveTournament, getTeamById]
+    [userId, data, getActiveTournament, getTeamById]
   );
 
   return (
