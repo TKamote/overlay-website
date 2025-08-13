@@ -1,10 +1,8 @@
 name: Deploy to Hostinger
 
-# Trigger the workflow on push to main branch
 on:
   push:
     branches: [ main ]
-  # You can also trigger manually
   workflow_dispatch:
 
 jobs:
@@ -13,34 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    # Download repository files
     - name: Checkout repository
       uses: actions/checkout@v4
     
-    # Optional: If you need to build your project first
-    # - name: Setup Node.js (if needed)
-    #   uses: actions/setup-node@v3
-    #   with:
-    #     node-version: '18'
-    # 
-    # - name: Install dependencies
-    #   run: npm install
-    # 
-    # - name: Build project
-    #   run: npm run build
-    
-    # Deploy to Hostinger via FTP
-    - name: Deploy to Hostinger
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+    # Alternative FTP deployment method
+    - name: Deploy to Hostinger via FTP
+      uses: sebastianpopp/ftp-action@releases/v2
       with:
-        server: ${{ secrets.HOSTINGER_FTP_HOST }}
-        username: ${{ secrets.HOSTINGER_FTP_USERNAME }}
-        password: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
-        server-dir: public_html/
-        # Optional: exclude files you don't want to upload
-        exclude: |
-          **/.git*
-          **/.git*/**
-          **/node_modules/**
-          **/.env
-          **/README.md
+        host: ${{ secrets.HOSTINGER_FTP_HOST }}
+        user: ${{ secrets.HOSTINGER_FTP_USERNAME }}
+        password: ${{ secrets.HOSTINGER_FTP_PASSWORD  }}
+        remoteDir: '/public_html/'
